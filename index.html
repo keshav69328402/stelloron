@@ -3,134 +3,174 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>STELLARION</title>
+<title>STELLARION — Galactic Conquest</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600&display=swap');
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--c0:#00f5ff;--c1:#bf00ff;--c2:#ff6600;--c3:#00ff88;--bg:#00000f;--panel:rgba(2,5,22,.96);--hl:#4af0ff}
-body{background:var(--bg);font-family:'Rajdhani',sans-serif;color:#7ab8d4;overflow:hidden;height:100vh;cursor:crosshair}
-canvas{display:block}
-#cw{position:fixed;inset:0}
-body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,20,40,.08) 2px,rgba(0,20,40,.08) 4px)}
-.screen{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%,#060b28,#00000f 65%)}
-.screen.hidden{display:none!important}
-.star{position:absolute;border-radius:50%;background:#fff;animation:tw var(--d,3s) ease-in-out infinite;opacity:var(--o,.6)}
-@keyframes tw{0%,100%{opacity:var(--o)}50%{opacity:.1}}
-.logo{font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(36px,7vw,86px);letter-spacing:.25em;background:linear-gradient(135deg,#00f5ff,#bf00ff,#00f5ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 30px rgba(0,245,255,.5));animation:lp 3s ease-in-out infinite;position:relative;z-index:2}
-@keyframes lp{0%,100%{filter:drop-shadow(0 0 30px rgba(0,245,255,.5))}50%{filter:drop-shadow(0 0 55px rgba(0,245,255,.9)) drop-shadow(0 0 100px rgba(191,0,255,.4))}}
-.sub{font-family:'Orbitron',monospace;font-size:clamp(8px,1.2vw,11px);letter-spacing:.7em;color:#1a4a6a;margin-bottom:32px;position:relative;z-index:2}
-.box{width:min(480px,92vw);background:var(--panel);border:1px solid rgba(74,240,255,.12);padding:24px;position:relative;z-index:2;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px))}
-.bttl{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:.4em;color:#1a4a6a;text-transform:uppercase;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(74,240,255,.07)}
-.field{display:flex;flex-direction:column;gap:3px;margin-bottom:11px}
-.lbl{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:.3em;color:#1a4a6a;text-transform:uppercase}
-.inp{font-family:'Orbitron',monospace;font-size:12px;letter-spacing:.1em;padding:10px 13px;background:rgba(0,20,40,.7);border:1px solid rgba(74,240,255,.22);color:var(--hl);outline:none;width:100%}
-.inp:focus{border-color:var(--hl)}
-.inp::placeholder{color:#1a4a6a}
-.row{display:flex;gap:7px;align-items:center}
-.frow{display:flex;gap:7px;flex-wrap:wrap;margin-top:3px}
-.fp{padding:8px 10px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);cursor:pointer;font-size:11px;transition:all .2s;text-align:center;min-width:58px}
-.fp:hover,.fp.sel{border-color:var(--hl);background:rgba(74,240,255,.07)}
-.fp.sel.f0{border-color:var(--c0);background:rgba(0,245,255,.09)}.fp.sel.f1{border-color:var(--c1);background:rgba(191,0,255,.09)}
-.fp.sel.f2{border-color:var(--c2);background:rgba(255,102,0,.09)}.fp.sel.f3{border-color:var(--c3);background:rgba(0,255,136,.09)}
-.fn{font-family:'Orbitron',monospace;font-size:6px;letter-spacing:.08em;margin-top:2px}
-.fp.f0 .fn{color:var(--c0)}.fp.f1 .fn{color:var(--c1)}.fp.f2 .fn{color:var(--c2)}.fp.f3 .fn{color:var(--c3)}
-.brow{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-.btn{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:.25em;padding:11px 28px;background:linear-gradient(135deg,#000918,#001428);border:1px solid var(--hl);color:var(--hl);cursor:pointer;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);transition:all .25s;text-transform:uppercase}
-.btn:hover{box-shadow:0 0 32px rgba(74,240,255,.3);transform:translateY(-1px)}
-.btn.alt{border-color:var(--c1);color:var(--c1)}.btn.sm{font-size:9px;padding:8px 18px}
-#st{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:.2em;color:#4a9ab8;margin-top:10px;min-height:15px}
-.code{font-family:'Orbitron',monospace;font-size:clamp(12px,3vw,28px);letter-spacing:.3em;color:var(--hl);text-shadow:0 0 24px rgba(74,240,255,.6);padding:10px;border:1px solid rgba(74,240,255,.18);background:rgba(0,20,40,.45);margin:10px 0;text-align:center;word-break:break-all}
-.slots{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:12px 0}
-.slot{padding:8px;border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);font-family:'Orbitron',monospace;font-size:7px;letter-spacing:.1em}
-.slot.on{border-color:rgba(74,240,255,.15);background:rgba(0,40,60,.22)}
-.slot .sn{font-size:11px;letter-spacing:.07em;color:var(--hl);margin-bottom:1px}
-.slot.on.f0 .sn{color:var(--c0)}.slot.on.f1 .sn{color:var(--c1)}.slot.on.f2 .sn{color:var(--c2)}.slot.on.f3 .sn{color:var(--c3)}
-.slot .sf{color:#1a4a6a;font-size:6px}
-.wnote{font-size:10px;color:#1a4a6a;font-style:italic;margin-bottom:3px}
-#wst{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:.2em;color:#4a9ab8;margin-top:8px}
-#badge{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:500;font-family:'Orbitron',monospace;font-size:7px;letter-spacing:.3em;padding:4px 12px;border:1px solid rgba(74,240,255,.2);background:rgba(2,5,22,.9);color:#4a9ab8;display:none;pointer-events:none}
-#badge.err{border-color:rgba(255,80,80,.4);color:#ff6060}
-#badge.ok{border-color:rgba(0,255,136,.3);color:#00cc66}
-#hud{position:fixed;inset:0;z-index:10;pointer-events:none;display:none}
-.pp{position:absolute;width:185px;padding:9px;background:var(--panel);border:1px solid rgba(255,255,255,.07);pointer-events:all;clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,9px 100%,0 calc(100% - 9px));transition:opacity .3s,transform .3s}
-.pp.p0{top:10px;left:10px;border-color:#003a3f}.pp.p1{top:10px;right:10px;border-color:#3a0050}
-.pp.p2{bottom:10px;left:10px;border-color:#4a1a00}.pp.p3{bottom:10px;right:10px;border-color:#003a22}
-.ph{font-family:'Orbitron',monospace;font-size:7px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding-bottom:5px;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:4px;flex-wrap:wrap}
-.pip{width:5px;height:5px;border-radius:50%;animation:pp2 2s ease-in-out infinite;flex-shrink:0}
-@keyframes pp2{0%,100%{opacity:1}50%{opacity:.3}}
-.pp.p0 .ph{color:var(--c0)}.pp.p1 .ph{color:var(--c1)}.pp.p2 .ph{color:var(--c2)}.pp.p3 .ph{color:var(--c3)}
-.ytag{font-family:'Orbitron',monospace;font-size:5px;letter-spacing:.2em;padding:1px 3px;background:rgba(74,240,255,.1);border:1px solid rgba(74,240,255,.3);color:var(--hl)}
-.pr{display:flex;justify-content:space-between;font-size:10px;margin:1px 0}
-.pr span:first-child{color:#1a3a5a;font-size:8px;text-transform:uppercase;letter-spacing:.07em}
-.pr span:last-child{color:#8ac8e0;font-weight:600}
-.pb{height:2px;background:#030810;margin:4px 0 2px}
-.pf{height:100%;transition:width .5s}
-.pp.p0 .pf{background:linear-gradient(90deg,#003040,var(--c0))}.pp.p1 .pf{background:linear-gradient(90deg,#200040,var(--c1))}
-.pp.p2 .pf{background:linear-gradient(90deg,#401000,var(--c2))}.pp.p3 .pf{background:linear-gradient(90deg,#002818,var(--c3))}
-.tl{font-family:'Orbitron',monospace;font-size:6px;color:#0e2238;margin-bottom:5px}
-.pbs{display:flex;flex-direction:column;gap:2px}
-.ab{font-family:'Orbitron',monospace;font-size:6px;letter-spacing:.05em;padding:4px 5px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);color:#2a5a7a;cursor:pointer;text-align:left;transition:all .2s;pointer-events:all;text-transform:uppercase}
-.ab:hover{background:rgba(255,255,255,.06);color:#aadaee;border-color:rgba(255,255,255,.14)}
-.ab.tv{border-color:rgba(255,215,0,.2);color:#cc8800}.ab.tv:hover{border-color:gold;color:gold;background:rgba(255,215,0,.05)}
-#ch{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;width:180px}
-#ct{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:.4em;color:#0e2a3a;text-transform:uppercase}
-#cr{font-family:'Orbitron',monospace;font-size:15px;color:var(--hl);letter-spacing:.2em;text-shadow:0 0 16px rgba(74,240,255,.5)}
-#ca{font-family:'Orbitron',monospace;font-size:6px;letter-spacing:.2em;color:#0e3a4a;margin-top:2px}
-#my{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:.3em;color:gold;text-shadow:0 0 10px gold;animation:ytp 1s ease-in-out infinite;margin-top:3px;display:none}
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --p0:#00f5ff;--p0d:#003a3f;--p0bg:rgba(0,245,255,0.09);
+  --p1:#bf00ff;--p1d:#3a0050;--p1bg:rgba(191,0,255,0.09);
+  --p2:#ff6600;--p2d:#4a1a00;--p2bg:rgba(255,102,0,0.09);
+  --p3:#00ff88;--p3d:#003a22;--p3bg:rgba(0,255,136,0.09);
+  --void:#00000f;--panel:rgba(2,5,22,0.96);--holo:#4af0ff;
+}
+body{background:var(--void);font-family:'Rajdhani',sans-serif;color:#7ab8d4;overflow:hidden;height:100vh;width:100vw;cursor:crosshair;}
+canvas{display:block;}
+#canvas-wrap{position:fixed;inset:0;}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,20,40,0.1) 2px,rgba(0,20,40,0.1) 4px);}
+
+/* SCREENS */
+.screen{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%,#060b28 0%,#00000f 65%);}
+.screen.hidden{display:none!important;}
+.star-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--d,3s) ease-in-out infinite;opacity:var(--o,.6);}
+@keyframes twinkle{0%,100%{opacity:var(--o,.6)}50%{opacity:.1}}
+
+.game-logo{font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(38px,7vw,90px);letter-spacing:.25em;background:linear-gradient(135deg,#00f5ff,#bf00ff,#00f5ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 30px rgba(0,245,255,.5));animation:logoPulse 3s ease-in-out infinite;position:relative;z-index:2;}
+@keyframes logoPulse{0%,100%{filter:drop-shadow(0 0 30px rgba(0,245,255,.5))}50%{filter:drop-shadow(0 0 55px rgba(0,245,255,.9)) drop-shadow(0 0 100px rgba(191,0,255,.4))}}
+.game-sub{font-family:'Orbitron',monospace;font-size:clamp(8px,1.3vw,12px);letter-spacing:.7em;color:#1a4a6a;margin-top:-2px;margin-bottom:36px;text-transform:uppercase;position:relative;z-index:2;}
+
+.btn{font-family:'Orbitron',monospace;font-size:12px;letter-spacing:.3em;padding:12px 36px;background:linear-gradient(135deg,#000918,#001428);border:1px solid var(--holo);color:var(--holo);cursor:pointer;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);transition:all .25s;text-transform:uppercase;box-shadow:0 0 12px rgba(74,240,255,.1);}
+.btn:hover{background:linear-gradient(135deg,#001428,#002244);box-shadow:0 0 38px rgba(74,240,255,.35);transform:translateY(-2px);}
+.btn.alt{border-color:#bf00ff;color:#bf00ff;box-shadow:0 0 12px rgba(191,0,255,.1);}
+.btn.alt:hover{box-shadow:0 0 38px rgba(191,0,255,.35);}
+.btn.sm{font-size:10px;padding:8px 20px;}
+.btn.red{border-color:#ff4444;color:#ff4444;}
+
+.holo-input{font-family:'Orbitron',monospace;font-size:13px;letter-spacing:.1em;padding:11px 15px;background:rgba(0,20,40,.7);border:1px solid rgba(74,240,255,.25);color:var(--holo);outline:none;width:100%;transition:border-color .2s;}
+.holo-input:focus{border-color:var(--holo);box-shadow:0 0 18px rgba(74,240,255,.12);}
+.holo-input::placeholder{color:#1a4a6a;}
+
+/* LOBBY */
+.box{width:min(500px,92vw);background:var(--panel);border:1px solid rgba(74,240,255,.12);padding:26px;position:relative;z-index:2;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));}
+.box-title{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:.4em;color:#1a4a6a;text-transform:uppercase;margin-bottom:16px;padding-bottom:9px;border-bottom:1px solid rgba(74,240,255,.07);}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:13px;}
+.flabel{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:.3em;color:#1a4a6a;text-transform:uppercase;}
+.row{display:flex;gap:8px;align-items:center;}
+.faction-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+.fp{padding:9px 11px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);cursor:pointer;font-size:12px;transition:all .2s;text-align:center;min-width:60px;}
+.fp:hover,.fp.sel{border-color:var(--holo);background:rgba(74,240,255,.07);}
+.fp.sel.f0{border-color:var(--p0);background:var(--p0bg);}
+.fp.sel.f1{border-color:var(--p1);background:var(--p1bg);}
+.fp.sel.f2{border-color:var(--p2);background:var(--p2bg);}
+.fp.sel.f3{border-color:var(--p3);background:var(--p3bg);}
+.fp .fn{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:.08em;margin-top:2px;}
+.fp.f0 .fn{color:var(--p0)}.fp.f1 .fn{color:var(--p1)}.fp.f2 .fn{color:var(--p2)}.fp.f3 .fn{color:var(--p3)}
+.btn-row{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap;}
+#lobby-status{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:.2em;color:#4a9ab8;margin-top:11px;min-height:16px;}
+
+/* WAITING */
+.code-display{font-family:'Orbitron',monospace;font-size:clamp(24px,5vw,46px);letter-spacing:.5em;color:var(--holo);text-shadow:0 0 28px rgba(74,240,255,.6);padding:14px;border:1px solid rgba(74,240,255,.18);background:rgba(0,20,40,.45);margin:12px 0;text-align:center;}
+.pslots{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:14px 0;}
+.pslot{padding:9px;border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);font-family:'Orbitron',monospace;font-size:8px;letter-spacing:.1em;}
+.pslot.on{border-color:rgba(74,240,255,.18);background:rgba(0,40,60,.25);}
+.pslot.on.f0{border-color:var(--p0d)}.pslot.on.f1{border-color:var(--p1d)}.pslot.on.f2{border-color:var(--p2d)}.pslot.on.f3{border-color:var(--p3d)}
+.pslot .sn{font-size:12px;letter-spacing:.08em;color:var(--holo);margin-bottom:2px;}
+.pslot.on.f0 .sn{color:var(--p0)}.pslot.on.f1 .sn{color:var(--p1)}.pslot.on.f2 .sn{color:var(--p2)}.pslot.on.f3 .sn{color:var(--p3)}
+.pslot .sf{color:#1a4a6a;font-size:7px;}
+.wait-note{font-size:11px;color:#1a4a6a;font-style:italic;margin-bottom:4px;}
+
+/* CONNECTION STATUS BADGE */
+#conn-badge{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:500;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:.3em;padding:5px 14px;border:1px solid rgba(74,240,255,.2);background:rgba(2,5,22,.9);color:#4a9ab8;display:none;pointer-events:none;}
+#conn-badge.err{border-color:rgba(255,80,80,.4);color:#ff6060;}
+#conn-badge.ok{border-color:rgba(0,255,136,.3);color:#00cc66;}
+
+/* HUD */
+#hud{position:fixed;inset:0;z-index:10;pointer-events:none;display:none;}
+.pp{position:absolute;width:190px;padding:10px;background:var(--panel);border:1px solid rgba(255,255,255,.07);pointer-events:all;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));transition:opacity .3s,transform .3s,box-shadow .3s;}
+.pp.p0{top:12px;left:12px;border-color:var(--p0d);}
+.pp.p1{top:12px;right:12px;border-color:var(--p1d);}
+.pp.p2{bottom:12px;left:12px;border-color:var(--p2d);}
+.pp.p3{bottom:12px;right:12px;border-color:var(--p3d);}
+.pp-head{font-family:'Orbitron',monospace;font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding-bottom:6px;margin-bottom:7px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.pip{width:6px;height:6px;border-radius:50%;animation:pip 2s ease-in-out infinite;flex-shrink:0;}
+@keyframes pip{0%,100%{opacity:1}50%{opacity:.3}}
+.pp.p0 .pp-head{color:var(--p0)}.pp.p1 .pp-head{color:var(--p1)}.pp.p2 .pp-head{color:var(--p2)}.pp.p3 .pp-head{color:var(--p3)}
+.you-tag{font-family:'Orbitron',monospace;font-size:6px;letter-spacing:.2em;padding:1px 4px;background:rgba(74,240,255,.1);border:1px solid rgba(74,240,255,.3);color:var(--holo);}
+.pp-row{display:flex;justify-content:space-between;font-size:11px;margin:2px 0;}
+.pp-row span:first-child{color:#1a3a5a;font-size:9px;text-transform:uppercase;letter-spacing:.08em;}
+.pp-row span:last-child{color:#8ac8e0;font-weight:600;}
+.pp-bar{height:2px;background:#030810;margin:5px 0 2px;}
+.pp-fill{height:100%;transition:width .5s;}
+.pp.p0 .pp-fill{background:linear-gradient(90deg,#003040,var(--p0))}.pp.p1 .pp-fill{background:linear-gradient(90deg,#200040,var(--p1))}.pp.p2 .pp-fill{background:linear-gradient(90deg,#401000,var(--p2))}.pp.p3 .pp-fill{background:linear-gradient(90deg,#002818,var(--p3))}
+.tlabel{font-family:'Orbitron',monospace;font-size:7px;color:#0e2238;margin-bottom:6px;}
+.pp-btns{display:flex;flex-direction:column;gap:2px;}
+.ab{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:.06em;padding:4px 6px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);color:#2a5a7a;cursor:pointer;text-align:left;transition:all .2s;pointer-events:all;text-transform:uppercase;}
+.ab:hover{background:rgba(255,255,255,.06);color:#aadaee;border-color:rgba(255,255,255,.14);}
+.ab.tv{border-color:rgba(255,215,0,.2);color:#cc8800;}
+.ab.tv:hover{border-color:gold;color:gold;background:rgba(255,215,0,.05);}
+
+/* CENTER */
+#chud{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;width:190px;}
+#cturn{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:.4em;color:#0e2a3a;text-transform:uppercase;}
+#cround{font-family:'Orbitron',monospace;font-size:17px;color:var(--holo);letter-spacing:.2em;text-shadow:0 0 18px rgba(74,240,255,.5);}
+#cacts{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:.25em;color:#0e3a4a;margin-top:2px;}
+#myturn{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:.3em;color:gold;text-shadow:0 0 12px gold;animation:ytp 1s ease-in-out infinite;margin-top:4px;display:none;}
 @keyframes ytp{0%,100%{opacity:1}50%{opacity:.3}}
-#ew{position:absolute;bottom:calc(50% - 52px);left:50%;transform:translateX(-50%);pointer-events:all}
-#eb{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:.2em;padding:8px 24px;background:linear-gradient(135deg,#000918,#001428);border:1px solid var(--hl);color:var(--hl);cursor:pointer;clip-path:polygon(9px 0,100% 0,calc(100% - 9px) 100%,0 100%);transition:all .25s;text-transform:uppercase}
-#eb:hover{box-shadow:0 0 24px rgba(74,240,255,.3)}
-#log{position:absolute;top:calc(50% + 42px);left:50%;transform:translateX(-50%);width:340px;max-height:80px;overflow:hidden;background:rgba(2,5,22,.88);border:1px solid rgba(74,240,255,.07);padding:4px 8px;pointer-events:all}
-.le{font-size:9px;line-height:1.5;color:#1a3a5a;border-bottom:1px solid rgba(255,255,255,.02);padding:1px 0}
-.le.f{color:#7ab8d4}.le:last-child{border:none}
-.camr{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:2px;pointer-events:all}
-.cb{font-family:'Orbitron',monospace;font-size:8px;padding:3px 7px;background:rgba(2,5,22,.9);border:1px solid rgba(255,255,255,.07);color:#1a4a6a;cursor:pointer;transition:all .2s}
-.cb:hover{color:var(--hl);border-color:rgba(74,240,255,.3)}
-#tip{position:fixed;z-index:50;background:rgba(2,5,22,.97);border:1px solid rgba(74,240,255,.18);padding:6px 10px;pointer-events:none;font-size:9px;line-height:1.7;max-width:160px;display:none}
-#tip strong{font-family:'Orbitron',monospace;font-size:8px;color:var(--hl);display:block;margin-bottom:1px}
-#tm{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(0,0,10,.88);backdrop-filter:blur(5px)}
-#tm.open{display:flex}
-.tb{width:min(520px,93vw);background:var(--panel);border:1px solid rgba(255,215,0,.28);padding:24px;position:relative;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px))}
-.th2{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:.4em;color:gold;text-transform:uppercase;margin-bottom:10px}
-.tq{font-size:16px;font-weight:600;color:#c8e8f4;line-height:1.5;margin-bottom:14px}
-.tcs{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.tc{font-size:13px;font-weight:600;padding:9px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);color:#7ab8d4;cursor:pointer;transition:all .2s;text-align:left}
-.tc:hover:not(:disabled){background:rgba(74,240,255,.07);border-color:rgba(74,240,255,.38);color:var(--hl)}
-.tc.ok{background:rgba(0,255,100,.11);border-color:#00ff64;color:#00ff64}
-.tc.no{background:rgba(255,50,50,.11);border-color:#ff3232;color:#ff3232}
-.tr2{font-family:'Orbitron',monospace;font-size:10px;text-align:center;margin-top:10px;min-height:16px;letter-spacing:.2em}
-.tr2.win{color:#00ff88}.tr2.lose{color:#ff4444}
-#tcc{position:absolute;top:8px;right:11px;background:none;border:none;color:#1a4a6a;cursor:pointer;font-size:16px}
-#tcc:hover{color:#ff4444}
-.tld{text-align:center;color:#1a4a6a;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:.3em;padding:24px;animation:lb 1s ease-in-out infinite}
+#end-wrap{position:absolute;bottom:calc(50% - 58px);left:50%;transform:translateX(-50%);pointer-events:all;}
+#end-btn{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:.22em;padding:9px 28px;background:linear-gradient(135deg,#000918,#001428);border:1px solid var(--holo);color:var(--holo);cursor:pointer;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);transition:all .25s;text-transform:uppercase;}
+#end-btn:hover{box-shadow:0 0 28px rgba(74,240,255,.3);}
+#log{position:absolute;top:calc(50% + 46px);left:50%;transform:translateX(-50%);width:350px;max-height:86px;overflow:hidden;background:rgba(2,5,22,.88);border:1px solid rgba(74,240,255,.08);padding:5px 9px;pointer-events:all;}
+.le{font-size:10px;line-height:1.55;color:#1a3a5a;border-bottom:1px solid rgba(255,255,255,.02);padding:1px 0;}
+.le.f{color:#7ab8d4;}.le:last-child{border:none;}
+.cam-row{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:3px;pointer-events:all;}
+.cb{font-family:'Orbitron',monospace;font-size:9px;padding:4px 8px;background:rgba(2,5,22,.9);border:1px solid rgba(255,255,255,.07);color:#1a4a6a;cursor:pointer;transition:all .2s;}
+.cb:hover{color:var(--holo);border-color:rgba(74,240,255,.3);}
+#tip{position:fixed;z-index:50;background:rgba(2,5,22,.97);border:1px solid rgba(74,240,255,.18);padding:7px 11px;pointer-events:none;font-size:10px;line-height:1.7;max-width:175px;display:none;}
+#tip strong{font-family:'Orbitron',monospace;font-size:9px;color:var(--holo);display:block;margin-bottom:2px;}
+
+/* TRIVIA */
+#trivia-modal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(0,0,10,.88);backdrop-filter:blur(5px);}
+#trivia-modal.open{display:flex;}
+.tbox{width:min(540px,93vw);background:var(--panel);border:1px solid rgba(255,215,0,.28);padding:26px;position:relative;clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));box-shadow:0 0 55px rgba(255,215,0,.09);}
+.th{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:.4em;color:gold;text-transform:uppercase;margin-bottom:4px;}
+.trew{font-size:11px;color:#8ac8e0;margin-bottom:14px;font-style:italic;}
+.tq{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:600;color:#c8e8f4;line-height:1.5;margin-bottom:16px;}
+.tchoices{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.tc{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;padding:10px 13px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);color:#7ab8d4;cursor:pointer;transition:all .2s;text-align:left;}
+.tc:hover:not(:disabled){background:rgba(74,240,255,.07);border-color:rgba(74,240,255,.38);color:var(--holo);}
+.tc.ok{background:rgba(0,255,100,.11);border-color:#00ff64;color:#00ff64;}
+.tc.no{background:rgba(255,50,50,.11);border-color:#ff3232;color:#ff3232;}
+.tres{font-family:'Orbitron',monospace;font-size:11px;text-align:center;margin-top:12px;min-height:18px;letter-spacing:.2em;}
+.tres.win{color:#00ff88;text-shadow:0 0 18px rgba(0,255,136,.5);}
+.tres.lose{color:#ff4444;}
+#tc-close{position:absolute;top:9px;right:12px;background:none;border:none;color:#1a4a6a;cursor:pointer;font-size:17px;transition:color .2s;}
+#tc-close:hover{color:#ff4444;}
+.tload{text-align:center;color:#1a4a6a;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:.3em;padding:28px;animation:lb 1s ease-in-out infinite;}
 @keyframes lb{0%,100%{opacity:.3}50%{opacity:1}}
-#vs{position:fixed;inset:0;z-index:300;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(ellipse at center,#050a25,#00000f)}
-#vs h2{font-family:'Orbitron',monospace;font-size:clamp(24px,6vw,58px);letter-spacing:.3em;background:linear-gradient(135deg,#00f5ff,#bf00ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-#vsm{font-family:'Orbitron',monospace;font-size:12px;letter-spacing:.15em;color:#4a9ab8}
+
+/* VICTORY */
+#vs{position:fixed;inset:0;z-index:300;display:none;flex-direction:column;align-items:center;justify-content:center;gap:15px;background:radial-gradient(ellipse at center,#050a25,#00000f);}
+#vs h2{font-family:'Orbitron',monospace;font-size:clamp(26px,6vw,62px);letter-spacing:.3em;background:linear-gradient(135deg,#00f5ff,#bf00ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+#vs-msg{font-family:'Orbitron',monospace;font-size:13px;letter-spacing:.15em;color:#4a9ab8;}
 </style>
 </head>
 <body>
-<div id="cw"><canvas id="c"></canvas></div>
-<div id="badge"></div>
+<div id="canvas-wrap"><canvas id="c"></canvas></div>
+<div id="conn-badge">CONNECTING...</div>
 
-<div class="screen" id="sc-title">
-  <div id="ts" style="position:absolute;inset:0;overflow:hidden;pointer-events:none"></div>
-  <div class="logo">STELLARION</div>
-  <div class="sub">Galactic Conquest · Online Multiplayer</div>
-  <div style="display:flex;gap:12px;position:relative;z-index:2">
-    <button class="btn" onclick="showScreen('sc-lobby')">ENTER WAR ROOM</button>
+<!-- TITLE -->
+<div class="screen" id="title-screen">
+  <div class="star-bg" id="ts"></div>
+  <div class="game-logo">STELLARION</div>
+  <div class="game-sub">Galactic Conquest · Peer-to-Peer Multiplayer</div>
+  <div style="display:flex;gap:13px;position:relative;z-index:2;">
+    <button class="btn" onclick="showScreen('lobby-screen')">ENTER WAR ROOM</button>
   </div>
 </div>
 
-<div class="screen hidden" id="sc-lobby">
-  <div id="ls" style="position:absolute;inset:0;overflow:hidden;pointer-events:none"></div>
+<!-- LOBBY -->
+<div class="screen hidden" id="lobby-screen">
+  <div class="star-bg" id="ls"></div>
   <div class="box">
-    <div class="bttl">Commander Registration</div>
-    <div class="field"><div class="lbl">Callsign</div><input class="inp" id="pname" placeholder="Your name..." maxlength="16"/></div>
+    <div class="box-title">Commander Registration</div>
     <div class="field">
-      <div class="lbl">Faction</div>
-      <div class="frow">
+      <div class="flabel">Callsign</div>
+      <input class="holo-input" id="pname" placeholder="Your name..." maxlength="16"/>
+    </div>
+    <div class="field">
+      <div class="flabel">Faction</div>
+      <div class="faction-row">
         <div class="fp f0 sel" onclick="pickF(0)"><div>🛸</div><div class="fn">CRYONIX</div></div>
         <div class="fp f1"     onclick="pickF(1)"><div>👾</div><div class="fn">VOIDBORN</div></div>
         <div class="fp f2"     onclick="pickF(2)"><div>🚀</div><div class="fn">IGNARIX</div></div>
@@ -138,410 +178,875 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;back
       </div>
     </div>
     <div class="field">
-      <div class="lbl">Join existing game</div>
+      <div class="flabel">Join existing game</div>
       <div class="row">
-        <input class="inp" id="jcode" placeholder="Paste room code..." style="flex:1"/>
+        <input class="holo-input" id="join-code" placeholder="Room code e.g. NOVA-7429" maxlength="12" style="flex:1"/>
         <button class="btn sm alt" onclick="joinRoom()">JOIN</button>
       </div>
     </div>
-    <div class="brow">
+    <div class="btn-row">
       <button class="btn" onclick="createRoom()">HOST NEW GAME</button>
-      <button class="btn sm alt" onclick="showScreen('sc-title')">BACK</button>
+      <button class="btn alt sm" onclick="showScreen('title-screen')">BACK</button>
     </div>
-    <div id="st"></div>
+    <div id="lobby-status"></div>
   </div>
 </div>
 
-<div class="screen hidden" id="sc-wait">
-  <div id="ws2" style="position:absolute;inset:0;overflow:hidden;pointer-events:none"></div>
-  <div class="box" style="text-align:center">
-    <div class="bttl">War Room — Share This Code</div>
-    <div class="code" id="rcode">----</div>
-    <button class="btn sm" onclick="copyCode()" id="cbtn" style="margin-bottom:12px">📋 COPY CODE</button>
-    <div class="slots" id="slots"></div>
-    <div class="wnote">Friends open this page, paste the code, and click JOIN</div>
-    <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap">
-      <button class="btn" id="lbtn" onclick="launch()" style="display:none">⚡ LAUNCH</button>
-      <button class="btn sm alt" onclick="leaveRoom()">LEAVE</button>
+<!-- WAITING ROOM -->
+<div class="screen hidden" id="wait-screen">
+  <div class="star-bg" id="ws"></div>
+  <div class="box" style="text-align:center;">
+    <div class="box-title">War Room — Share This Code</div>
+    <div class="flabel" style="margin-bottom:4px;">ROOM CODE</div>
+    <div class="code-display" id="room-display">----</div>
+    <button class="btn sm" onclick="copyCode()" style="margin-bottom:14px;" id="copy-btn">📋 COPY CODE</button>
+    <div class="pslots" id="pslots"></div>
+    <div class="wait-note">Friends open this page and paste the code to join (up to 4 players)</div>
+    <div style="display:flex;gap:9px;justify-content:center;margin-top:13px;flex-wrap:wrap;">
+      <button class="btn" id="launch-btn" onclick="hostLaunch()" style="display:none;">⚡ LAUNCH</button>
+      <button class="btn alt sm" onclick="leaveWaiting()">LEAVE</button>
     </div>
-    <div id="wst"></div>
+    <div id="wait-status" style="font-family:'Orbitron',monospace;font-size:9px;letter-spacing:.2em;color:#4a9ab8;margin-top:9px;"></div>
   </div>
 </div>
 
+<!-- HUD -->
 <div id="hud">
-  <div class="pp p0" id="pp0"><div class="ph"><div class="pip" style="background:var(--c0)"></div><span id="n0">CRYONIX</span><span class="ytag" id="y0" style="display:none">YOU</span></div><div class="pr"><span>Energy</span><span id="e0">12</span></div><div class="pr"><span>Biomass</span><span id="b0">8</span></div><div class="pr"><span>Fleet</span><span id="f0">5</span></div><div class="pr"><span>Research</span><span id="r0">3</span></div><div class="pb"><div class="pf" id="tb0" style="width:25%"></div></div><div class="tl">SECTORS: <span id="tr0">0</span>/400</div><div class="pbs" id="pb0"><button class="ab tv" onclick="openTrivia(0)">🌟 TRIVIA +6 Energy</button><button class="ab" onclick="act(0,'expand')">⚡ Colonize [5e]</button><button class="ab" onclick="act(0,'recruit')">🚀 Fleet [3b]</button><button class="ab" onclick="act(0,'research')">🔬 Tech [4r]</button><button class="ab" onclick="act(0,'fortify')">🛡 Shield [6e]</button></div></div>
-  <div class="pp p1" id="pp1"><div class="ph"><div class="pip" style="background:var(--c1)"></div><span id="n1">VOIDBORN</span><span class="ytag" id="y1" style="display:none">YOU</span></div><div class="pr"><span>Energy</span><span id="e1">10</span></div><div class="pr"><span>Biomass</span><span id="b1">12</span></div><div class="pr"><span>Fleet</span><span id="f1">5</span></div><div class="pr"><span>Research</span><span id="r1">3</span></div><div class="pb"><div class="pf" id="tb1" style="width:25%"></div></div><div class="tl">SECTORS: <span id="tr1">0</span>/400</div><div class="pbs" id="pb1"><button class="ab tv" onclick="openTrivia(1)">🌟 TRIVIA +6 Energy</button><button class="ab" onclick="act(1,'expand')">⚡ Colonize [5e]</button><button class="ab" onclick="act(1,'recruit')">🚀 Fleet [3b]</button><button class="ab" onclick="act(1,'research')">🔬 Tech [4r]</button><button class="ab" onclick="act(1,'fortify')">🛡 Shield [6e]</button></div></div>
-  <div class="pp p2" id="pp2"><div class="ph"><div class="pip" style="background:var(--c2)"></div><span id="n2">IGNARIX</span><span class="ytag" id="y2" style="display:none">YOU</span></div><div class="pr"><span>Energy</span><span id="e2">10</span></div><div class="pr"><span>Biomass</span><span id="b2">8</span></div><div class="pr"><span>Fleet</span><span id="f2">7</span></div><div class="pr"><span>Research</span><span id="r2">3</span></div><div class="pb"><div class="pf" id="tb2" style="width:25%"></div></div><div class="tl">SECTORS: <span id="tr2">0</span>/400</div><div class="pbs" id="pb2"><button class="ab tv" onclick="openTrivia(2)">🌟 TRIVIA +6 Energy</button><button class="ab" onclick="act(2,'expand')">⚡ Colonize [5e]</button><button class="ab" onclick="act(2,'recruit')">🚀 Fleet [3b]</button><button class="ab" onclick="act(2,'research')">🔬 Tech [4r]</button><button class="ab" onclick="act(2,'fortify')">🛡 Shield [6e]</button></div></div>
-  <div class="pp p3" id="pp3"><div class="ph"><div class="pip" style="background:var(--c3)"></div><span id="n3">AETHERON</span><span class="ytag" id="y3" style="display:none">YOU</span></div><div class="pr"><span>Energy</span><span id="e3">10</span></div><div class="pr"><span>Biomass</span><span id="b3">8</span></div><div class="pr"><span>Fleet</span><span id="f3">5</span></div><div class="pr"><span>Research</span><span id="r3">5</span></div><div class="pb"><div class="pf" id="tb3" style="width:25%"></div></div><div class="tl">SECTORS: <span id="tr3">0</span>/400</div><div class="pbs" id="pb3"><button class="ab tv" onclick="openTrivia(3)">🌟 TRIVIA +6 Energy</button><button class="ab" onclick="act(3,'expand')">⚡ Colonize [5e]</button><button class="ab" onclick="act(3,'recruit')">🚀 Fleet [3b]</button><button class="ab" onclick="act(3,'research')">🔬 Tech [4r]</button><button class="ab" onclick="act(3,'fortify')">🛡 Shield [6e]</button></div></div>
-  <div id="ch"><div id="ct">AWAITING</div><div id="cr">CYCLE 1</div><div id="ca">ACTIONS: 3/3</div><div id="my">▶ YOUR TURN ◀</div></div>
-  <div id="ew"><button id="eb" onclick="endTurn()">END TURN ▶▶</button></div>
+  <div class="pp p0" id="pp0">
+    <div class="pp-head"><div class="pip" style="background:var(--p0)"></div><span id="n0">CRYONIX</span><span class="you-tag" id="y0" style="display:none">YOU</span></div>
+    <div class="pp-row"><span>Energy</span><span id="e0">12</span></div>
+    <div class="pp-row"><span>Biomass</span><span id="b0">8</span></div>
+    <div class="pp-row"><span>Fleet</span><span id="f0">5</span></div>
+    <div class="pp-row"><span>Research</span><span id="r0">3</span></div>
+    <div class="pp-bar"><div class="pp-fill" id="tb0" style="width:25%"></div></div>
+    <div class="tlabel">SECTORS: <span id="tr0">0</span>/400</div>
+    <div class="pp-btns" id="pbtns0">
+      <button class="ab tv" onclick="openTrivia(0)">🌟 TRIVIA +6 Energy</button>
+      <button class="ab" onclick="act(0,'expand')">⚡ Colonize [5e]</button>
+      <button class="ab" onclick="act(0,'recruit')">🚀 Fleet [3b]</button>
+      <button class="ab" onclick="act(0,'research')">🔬 Tech [4r]</button>
+      <button class="ab" onclick="act(0,'fortify')">🛡 Shield [6e]</button>
+    </div>
+  </div>
+  <div class="pp p1" id="pp1">
+    <div class="pp-head"><div class="pip" style="background:var(--p1)"></div><span id="n1">VOIDBORN</span><span class="you-tag" id="y1" style="display:none">YOU</span></div>
+    <div class="pp-row"><span>Energy</span><span id="e1">10</span></div>
+    <div class="pp-row"><span>Biomass</span><span id="b1">12</span></div>
+    <div class="pp-row"><span>Fleet</span><span id="f1">5</span></div>
+    <div class="pp-row"><span>Research</span><span id="r1">3</span></div>
+    <div class="pp-bar"><div class="pp-fill" id="tb1" style="width:25%"></div></div>
+    <div class="tlabel">SECTORS: <span id="tr1">0</span>/400</div>
+    <div class="pp-btns" id="pbtns1">
+      <button class="ab tv" onclick="openTrivia(1)">🌟 TRIVIA +6 Energy</button>
+      <button class="ab" onclick="act(1,'expand')">⚡ Colonize [5e]</button>
+      <button class="ab" onclick="act(1,'recruit')">🚀 Fleet [3b]</button>
+      <button class="ab" onclick="act(1,'research')">🔬 Tech [4r]</button>
+      <button class="ab" onclick="act(1,'fortify')">🛡 Shield [6e]</button>
+    </div>
+  </div>
+  <div class="pp p2" id="pp2">
+    <div class="pp-head"><div class="pip" style="background:var(--p2)"></div><span id="n2">IGNARIX</span><span class="you-tag" id="y2" style="display:none">YOU</span></div>
+    <div class="pp-row"><span>Energy</span><span id="e2">10</span></div>
+    <div class="pp-row"><span>Biomass</span><span id="b2">8</span></div>
+    <div class="pp-row"><span>Fleet</span><span id="f2">7</span></div>
+    <div class="pp-row"><span>Research</span><span id="r2">3</span></div>
+    <div class="pp-bar"><div class="pp-fill" id="tb2" style="width:25%"></div></div>
+    <div class="tlabel">SECTORS: <span id="tr2">0</span>/400</div>
+    <div class="pp-btns" id="pbtns2">
+      <button class="ab tv" onclick="openTrivia(2)">🌟 TRIVIA +6 Energy</button>
+      <button class="ab" onclick="act(2,'expand')">⚡ Colonize [5e]</button>
+      <button class="ab" onclick="act(2,'recruit')">🚀 Fleet [3b]</button>
+      <button class="ab" onclick="act(2,'research')">🔬 Tech [4r]</button>
+      <button class="ab" onclick="act(2,'fortify')">🛡 Shield [6e]</button>
+    </div>
+  </div>
+  <div class="pp p3" id="pp3">
+    <div class="pp-head"><div class="pip" style="background:var(--p3)"></div><span id="n3">AETHERON</span><span class="you-tag" id="y3" style="display:none">YOU</span></div>
+    <div class="pp-row"><span>Energy</span><span id="e3">10</span></div>
+    <div class="pp-row"><span>Biomass</span><span id="b3">8</span></div>
+    <div class="pp-row"><span>Fleet</span><span id="f3">5</span></div>
+    <div class="pp-row"><span>Research</span><span id="r3">5</span></div>
+    <div class="pp-bar"><div class="pp-fill" id="tb3" style="width:25%"></div></div>
+    <div class="tlabel">SECTORS: <span id="tr3">0</span>/400</div>
+    <div class="pp-btns" id="pbtns3">
+      <button class="ab tv" onclick="openTrivia(3)">🌟 TRIVIA +6 Energy</button>
+      <button class="ab" onclick="act(3,'expand')">⚡ Colonize [5e]</button>
+      <button class="ab" onclick="act(3,'recruit')">🚀 Fleet [3b]</button>
+      <button class="ab" onclick="act(3,'research')">🔬 Tech [4r]</button>
+      <button class="ab" onclick="act(3,'fortify')">🛡 Shield [6e]</button>
+    </div>
+  </div>
+
+  <div id="chud">
+    <div id="cturn">AWAITING</div>
+    <div id="cround">CYCLE 1</div>
+    <div id="cacts">ACTIONS: 3/3</div>
+    <div id="myturn">▶ YOUR TURN ◀</div>
+  </div>
+  <div id="end-wrap"><button id="end-btn" onclick="endTurn()">END TURN ▶▶</button></div>
   <div id="log"></div>
-  <div class="camr"><button class="cb" onclick="resetCam()">⌂</button><button class="cb" onclick="rotCam(-1)">◀</button><button class="cb" onclick="rotCam(1)">▶</button><button class="cb" onclick="tiltCam(-1)">▲</button><button class="cb" onclick="tiltCam(1)">▼</button><button class="cb" onclick="zoomCam(-1)">+</button><button class="cb" onclick="zoomCam(1)">−</button></div>
+  <div class="cam-row">
+    <button class="cb" onclick="resetCam()">⌂</button>
+    <button class="cb" onclick="rotCam(-1)">◀</button>
+    <button class="cb" onclick="rotCam(1)">▶</button>
+    <button class="cb" onclick="tiltCam(-1)">▲</button>
+    <button class="cb" onclick="tiltCam(1)">▼</button>
+    <button class="cb" onclick="zoomCam(-1)">+</button>
+    <button class="cb" onclick="zoomCam(1)">−</button>
+  </div>
 </div>
+
 <div id="tip"></div>
 
-<div id="tm"><div class="tb"><button id="tcc" onclick="closeTrivia()">✕</button><div class="th2">⭐ SPACE TRIVIA — Answer correctly for +6 Energy!</div><div id="tbody"><div class="tld">SCANNING THE COSMOS...</div></div><div class="tr2" id="tres"></div></div></div>
+<!-- TRIVIA -->
+<div id="trivia-modal">
+  <div class="tbox">
+    <button id="tc-close" onclick="closeTrivia()">✕</button>
+    <div class="th">⭐ SPACE TRIVIA CHALLENGE</div>
+    <div class="trew" id="trew">Answer correctly → +6 Energy!</div>
+    <div id="tbody"><div class="tload">GENERATING QUESTION...</div></div>
+    <div class="tres" id="tres"></div>
+  </div>
+</div>
 
-<div id="vs"><h2>DOMINION</h2><p id="vsm"></p><button class="btn" onclick="location.reload()">NEW CAMPAIGN</button></div>
+<!-- VICTORY -->
+<div id="vs">
+  <h2>DOMINION</h2>
+  <p id="vs-msg"></p>
+  <button class="btn" onclick="location.reload()">NEW CAMPAIGN</button>
+</div>
 
+<!-- PeerJS CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.2/peerjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ── DATA ──────────────────────────────────────────
-const GRID=20,TOTAL=400,MAX_ACT=3;
-const FD=[
-  {name:'Cryonix Hegemony',icon:'🛸',col:0x00f5ff,css:'#00f5ff',inc:{e:4,b:2,f:1,r:1}},
-  {name:'Voidborn Hive',   icon:'👾',col:0xbf00ff,css:'#bf00ff',inc:{e:2,b:4,f:1,r:1}},
-  {name:'Ignarix Armada',  icon:'🚀',col:0xff6600,css:'#ff6600',inc:{e:2,b:2,f:3,r:1}},
-  {name:'Aetheron Coll.',  icon:'🌌',col:0x00ff88,css:'#00ff88',inc:{e:2,b:2,f:1,r:3}},
+'use strict';
+// ══════════════════════════════════════════════════
+//  CONSTANTS & FACTION DATA
+// ══════════════════════════════════════════════════
+const GRID=20, TOTAL=GRID*GRID, MAX_ACT=3;
+const FDATA=[
+  {name:'Cryonix Hegemony',  icon:'🛸', col:0x00f5ff, css:'#00f5ff', inc:{e:4,b:2,f:1,r:1}},
+  {name:'Voidborn Hive',     icon:'👾', col:0xbf00ff, css:'#bf00ff', inc:{e:2,b:4,f:1,r:1}},
+  {name:'Ignarix Armada',    icon:'🚀', col:0xff6600, css:'#ff6600', inc:{e:2,b:2,f:3,r:1}},
+  {name:'Aetheron Collective',icon:'🌌',col:0x00ff88, css:'#00ff88', inc:{e:2,b:2,f:1,r:3}},
 ];
-const BR=[{e:12,b:8,f:5,r:3,tech:0},{e:10,b:12,f:5,r:3,tech:0},{e:10,b:8,f:7,r:3,tech:0},{e:10,b:8,f:5,r:5,tech:0}];
+const BASE_RES=[
+  {e:12,b:8, f:5,r:3,tech:0},
+  {e:10,b:12,f:5,r:3,tech:0},
+  {e:10,b:8, f:7,r:3,tech:0},
+  {e:10,b:8, f:5,r:5,tech:0},
+];
 
-// ── UI ────────────────────────────────────────────
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}
-function makeStar(id,n=150){const c=document.getElementById(id);if(!c)return;for(let i=0;i<n;i++){const s=document.createElement('div');s.className='star';const z=Math.random()*2+.5;s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${z}px;height:${z}px;--d:${(Math.random()*4+2).toFixed(1)}s;--o:${(Math.random()*.5+.25).toFixed(2)};animation-delay:${(Math.random()*4).toFixed(1)}s`;c.appendChild(s)}}
-['ts','ls','ws2'].forEach(makeStar);
-function bdg(msg,t=''){const b=document.getElementById('badge');b.textContent=msg;b.className=t;b.style.display='block';if(t==='ok')setTimeout(()=>b.style.display='none',2500)}
-function setSt(m){document.getElementById('st').textContent=m}
-function setWst(m){document.getElementById('wst').textContent=m}
+// ══════════════════════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  const el=document.getElementById(id);
+  if(el) el.classList.remove('hidden');
+}
+function makeStar(cid,n=180){
+  const c=document.getElementById(cid);if(!c)return;
+  for(let i=0;i<n;i++){
+    const s=document.createElement('div');s.className='star';
+    const sz=Math.random()*2+0.5;
+    s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;--d:${(Math.random()*4+2).toFixed(1)}s;--o:${(Math.random()*.5+.25).toFixed(2)};animation-delay:${(Math.random()*4).toFixed(1)}s`;
+    c.appendChild(s);
+  }
+}
+['ts','ls','ws'].forEach(id=>makeStar(id));
 
-// ── BACKEND: jsonblob.com ─────────────────────────
-// Free REST JSON storage. No auth. CORS open. Works from file://.
-// POST /api/jsonBlob   → create, returns ID in Location header
-// GET  /api/jsonBlob/ID → read current JSON
-// PUT  /api/jsonBlob/ID → update JSON (no auth needed)
-const BLOB='https://jsonblob.com/api/jsonBlob';
-async function bCreate(d){const r=await fetch(BLOB,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(d)});if(!r.ok)throw new Error('HTTP '+r.status);return r.headers.get('Location').split('/').pop()}
-async function bRead(id){const r=await fetch(`${BLOB}/${id}`,{headers:{'Accept':'application/json'}});if(r.status===404)return null;if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
-async function bWrite(id,d){const r=await fetch(`${BLOB}/${id}`,{method:'PUT',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(d)});if(!r.ok)throw new Error('HTTP '+r.status)}
+function badge(msg,type=''){
+  const b=document.getElementById('conn-badge');
+  b.textContent=msg;b.className=type;b.style.display='block';
+  if(type==='ok') setTimeout(()=>b.style.display='none',3000);
+}
+function hideBadge(){document.getElementById('conn-badge').style.display='none';}
+function setLobbyStatus(msg){document.getElementById('lobby-status').textContent=msg;}
+function setWaitStatus(msg){document.getElementById('wait-status').textContent=msg;}
 
-// ── STATE ─────────────────────────────────────────
-let mySlot=-1,isHost=false,myName='',myFaction=0,roomCode='';
-let players=[],gs=null,pollTimer=null,lastTs=0;
+// ══════════════════════════════════════════════════
+//  PEER-TO-PEER NETWORKING
+// ══════════════════════════════════════════════════
+let peer=null, hostConn=null; // for guests
+let guestConns=[]; // for host
+let mySlot=-1, isHost=false;
+let myName='', myFaction=0;
+let roomCode='';
+let players=[]; // [{name,faction,slot}]
+let gs=null;   // game state (only host authoritative; guests receive full state)
 
-function pickF(fi){myFaction=fi;document.querySelectorAll('.fp').forEach((e,i)=>e.classList.toggle('sel',i===fi))}
-function copyCode(){navigator.clipboard.writeText(roomCode).catch(()=>{});const b=document.getElementById('cbtn');b.textContent='✓ COPIED!';setTimeout(()=>b.textContent='📋 COPY CODE',2000)}
+function pickF(fi){
+  myFaction=fi;
+  document.querySelectorAll('.fp').forEach((el,i)=>{el.classList.remove('sel');if(i===fi)el.classList.add('sel');});
+}
+
+function genCode(){
+  const w=['NOVA','STAR','VOID','FLUX','HALO','WARP','RIFT','QUASAR','NEBULA','PULSAR'];
+  return w[Math.floor(Math.random()*w.length)]+'-'+Math.floor(1000+Math.random()*9000);
+}
+
+// init PeerJS with a readable ID derived from room code
+function initPeer(id){
+  return new Promise((resolve,reject)=>{
+    const p=new Peer(id,{debug:0});
+    p.on('open',()=>resolve(p));
+    p.on('error',e=>{
+      if(e.type==='unavailable-id') reject(new Error('ID taken'));
+      else reject(e);
+    });
+  });
+}
 
 async function createRoom(){
   myName=document.getElementById('pname').value.trim()||'Commander';
-  isHost=true;mySlot=0;players=[{name:myName,faction:myFaction,slot:0}];
-  setSt('Creating room...');bdg('Creating...');
+  isHost=true; mySlot=0;
+  roomCode=genCode();
+  // Peer ID = room code (sanitized)
+  const pid='STELLARION-'+roomCode.replace('-','');
+  setLobbyStatus('Setting up room...');
+  badge('Connecting to relay...');
   try{
-    roomCode=await bCreate({players,phase:'lobby',gs:null,ts:Date.now()});
-    lastTs=Date.now();
-    document.getElementById('rcode').textContent=roomCode;
-    document.getElementById('lbtn').style.display='inline-block';
-    renderSlots();showScreen('sc-wait');setWst('Waiting for players…');bdg('Room ready','ok');
-    startPoll();
-  }catch(e){setSt('Error: '+e.message+'. Are you online?');bdg('Failed','err')}
+    peer=await initPeer(pid);
+  }catch(e){
+    // If ID taken, try random suffix
+    try{ peer=await initPeer(pid+'-'+Math.floor(Math.random()*99)); }
+    catch(e2){ setLobbyStatus('Connection failed. Try again.'); badge('Failed','err'); return; }
+  }
+  players=[{name:myName,faction:myFaction,slot:0}];
+  peer.on('connection',onGuestConnect);
+  badge('Room ready','ok');
+  showScreen('wait-screen');
+  document.getElementById('room-display').textContent=roomCode;
+  document.getElementById('launch-btn').style.display='inline-block';
+  renderSlots();
+  setWaitStatus('Waiting for friends… (1/4)');
+}
+
+function onGuestConnect(conn){
+  conn.on('open',()=>{
+    conn.on('data',d=>handleHostReceive(conn,d));
+    conn.on('close',()=>{
+      guestConns=guestConns.filter(c=>c!==conn);
+      players=players.filter(p=>p.slot!==conn.metadata?.slot);
+      renderSlots();
+      if(gs) broadcast({type:'state',gs,players});
+    });
+  });
+}
+
+function handleHostReceive(conn,msg){
+  if(msg.type==='join'){
+    if(players.length>=4){conn.send({type:'full'});return;}
+    const slot=players.length;
+    conn.metadata={slot};
+    players.push({name:msg.name,faction:msg.faction,slot});
+    guestConns.push(conn);
+    conn.send({type:'welcome',slot,players,roomCode});
+    broadcast({type:'players',players});
+    renderSlots();
+    setWaitStatus(`Waiting… (${players.length}/4)`);
+  } else if(msg.type==='action'){
+    // apply action from guest
+    if(gs&&msg.slot===gs.curP){
+      applyAction(msg.slot,msg.action,msg.data);
+      broadcast({type:'state',gs,players});
+      refreshHUD();syncTiles();
+    }
+  }
 }
 
 async function joinRoom(){
   myName=document.getElementById('pname').value.trim()||'Commander';
-  const code=document.getElementById('jcode').value.trim();
-  if(!code){setSt('Enter the room code.');return}
-  isHost=false;roomCode=code;
-  setSt('Joining...');bdg('Connecting...');
-  try{
-    const data=await bRead(roomCode);
-    if(!data){setSt('Room not found. Check the code.');bdg('Not found','err');return}
-    if(data.phase==='playing'){setSt('Game already started.');bdg('In progress','err');return}
-    if(data.players.length>=4){setSt('Room is full!');bdg('Full','err');return}
-    if(data.players.some(p=>p.faction===myFaction)){setSt('Faction taken — pick another!');return}
-    mySlot=data.players.length;
-    players=[...data.players,{name:myName,faction:myFaction,slot:mySlot}];
-    await bWrite(roomCode,{players,phase:'lobby',gs:null,ts:Date.now()});
-    lastTs=Date.now();
-    document.getElementById('rcode').textContent=roomCode;
-    document.getElementById('lbtn').style.display='none';
-    renderSlots();showScreen('sc-wait');setWst('Joined! Waiting for host…');bdg('Joined!','ok');
-    startPoll();
-  }catch(e){setSt('Error: '+e.message);bdg('Error','err')}
+  const code=document.getElementById('join-code').value.trim().toUpperCase();
+  if(!code){setLobbyStatus('Enter a room code.');return;}
+  roomCode=code;
+  isHost=false;
+  setLobbyStatus('Connecting...');badge('Connecting...');
+  // Create a random peer ID for ourselves
+  const myPid='STEL-GUEST-'+Math.floor(Math.random()*99999);
+  try{ peer=await initPeer(myPid); }
+  catch(e){ setLobbyStatus('Could not connect. Check your internet.'); badge('Failed','err'); return; }
+
+  const hostId='STELLARION-'+roomCode.replace('-','');
+  hostConn=peer.connect(hostId,{reliable:true});
+  hostConn.on('open',()=>{
+    badge('Connected!','ok');
+    hostConn.send({type:'join',name:myName,faction:myFaction});
+  });
+  hostConn.on('data',handleGuestReceive);
+  hostConn.on('error',()=>{setLobbyStatus('Could not reach host. Check code.');badge('Error','err');});
+  hostConn.on('close',()=>{badge('Disconnected from host','err');});
+}
+
+function handleGuestReceive(msg){
+  if(msg.type==='full'){setLobbyStatus('Room is full.');badge('Full','err');return;}
+  if(msg.type==='welcome'){
+    mySlot=msg.slot; players=msg.players; roomCode=msg.roomCode||roomCode;
+    showScreen('wait-screen');
+    document.getElementById('room-display').textContent=roomCode;
+    document.getElementById('launch-btn').style.display='none';
+    renderSlots();
+    setWaitStatus(`Joined as slot ${mySlot+1}. Waiting for host…`);
+  } else if(msg.type==='players'){
+    players=msg.players; renderSlots();
+  } else if(msg.type==='start'){
+    gs=msg.gs; players=msg.players;
+    beginGame();
+  } else if(msg.type==='state'){
+    gs=msg.gs; players=msg.players;
+    refreshHUD(); syncTiles(); checkVictory();
+  }
+}
+
+function broadcast(msg){
+  guestConns.forEach(c=>{try{c.send(msg);}catch(e){}});
+}
+
+function sendToHost(msg){
+  if(hostConn&&hostConn.open) hostConn.send(msg);
+}
+
+function hostLaunch(){
+  if(players.length<1){alert('Need at least 1 player.');return;}
+  gs=buildState();
+  broadcast({type:'start',gs,players});
+  beginGame();
+}
+function leaveWaiting(){
+  if(peer){peer.destroy();peer=null;}
+  hostConn=null;guestConns=[];players=[];
+  showScreen('lobby-screen');
 }
 
 function renderSlots(){
-  const c=document.getElementById('slots');c.innerHTML='';
-  ['Cryonix','Voidborn','Ignarix','Aetheron'].forEach((nm,i)=>{
-    const p=players[i],d=document.createElement('div');
-    d.className='slot'+(p?` on f${p.faction}`:'');
-    d.innerHTML=p?`<div class="sn">${FD[p.faction].icon} ${p.name}${p.slot===mySlot?' (You)':''}</div><div class="sf">${nm}</div>`
-                 :`<div style="font-size:7px;color:#0e2238;font-family:Orbitron,monospace">AWAITING...</div>`;
+  const c=document.getElementById('pslots');c.innerHTML='';
+  const fi=['Cryonix','Voidborn','Ignarix','Aetheron'];
+  const ic=['🛸','👾','🚀','🌌'];
+  for(let i=0;i<4;i++){
+    const p=players[i];
+    const d=document.createElement('div');
+    d.className='pslot'+(p?` on f${p.faction}`:'');
+    d.innerHTML=p
+      ?`<div class="sn">${ic[p.faction]} ${p.name}${p.slot===mySlot?' (You)':''}</div><div class="sf">${fi[p.faction]}</div>`
+      :`<div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:.15em;color:#0e2238;">AWAITING...</div>`;
     c.appendChild(d);
+  }
+  setWaitStatus(`${players.length}/4 commanders connected`);
+}
+
+function copyCode(){
+  navigator.clipboard.writeText(roomCode).catch(()=>{});
+  document.getElementById('copy-btn').textContent='✓ COPIED!';
+  setTimeout(()=>document.getElementById('copy-btn').textContent='📋 COPY CODE',2000);
+}
+
+// ══════════════════════════════════════════════════
+//  GAME STATE
+// ══════════════════════════════════════════════════
+function buildState(){
+  const owner=new Array(TOTAL).fill(-1);
+  const shielded=new Array(TOTAL).fill(false);
+  const corners=[[0,0],[0,GRID-1],[GRID-1,0],[GRID-1,GRID-1]];
+  corners.forEach(([r,c],pi)=>{
+    if(pi>=players.length) return;
+    for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+      const nr=r+dr,nc=c+dc;
+      if(nr>=0&&nr<GRID&&nc>=0&&nc<GRID) owner[nr*GRID+nc]=pi;
+    }
   });
-  setWst(`${players.length}/4 connected`);
+  const res=players.map(p=>({...BASE_RES[p.faction]}));
+  return{owner,shielded,res,round:1,curP:0,acts:0,numP:players.length,log:['The void awakens. Four empires. One galaxy.']};
 }
 
-function startPoll(){
-  if(pollTimer)clearInterval(pollTimer);
-  pollTimer=setInterval(async()=>{
-    try{
-      const data=await bRead(roomCode);
-      if(!data||data.ts===lastTs)return;
-      lastTs=data.ts;
-      if(data.players)players=data.players;
-      if(data.phase==='lobby'){renderSlots();return}
-      if(data.phase==='playing'&&data.gs){
-        gs=data.gs;
-        const hud=document.getElementById('hud');
-        if(hud.style.display==='none'||!hud.style.display)beginGame();
-        else{refreshHUD();syncTiles();checkVictory()}
-      }
-    }catch(e){}
-  },2500);
-}
-function stopPoll(){if(pollTimer){clearInterval(pollTimer);pollTimer=null}}
-
-async function push(){
-  try{await bWrite(roomCode,{players,phase:'playing',gs,ts:Date.now()});lastTs=Date.now()}
-  catch(e){console.warn('push fail',e)}
-}
-
-async function launch(){
-  gs=buildGS();await push();beginGame();
-}
-function leaveRoom(){stopPoll();players=[];gs=null;showScreen('sc-lobby')}
-
-// ── GAME LOGIC ────────────────────────────────────
-function buildGS(){
-  const owner=new Array(TOTAL).fill(-1),shielded=new Array(TOTAL).fill(false);
-  [[0,0],[0,GRID-1],[GRID-1,0],[GRID-1,GRID-1]].forEach(([r,c],pi)=>{
-    if(pi>=players.length)return;
-    for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const nr=r+dr,nc=c+dc;if(nr>=0&&nr<GRID&&nc>=0&&nc<GRID)owner[nr*GRID+nc]=pi}
-  });
-  return{owner,shielded,res:players.map(p=>({...BR[p.faction]})),round:1,curP:0,acts:0,numP:players.length,log:['The void awakens. Four empires. One galaxy.']};
-}
-
-function isMyTurn(){return mySlot===gs?.curP}
+function isMyTurn(){return mySlot===gs?.curP;}
 function isAdj(idx,pi){
   const r=Math.floor(idx/GRID),c=idx%GRID;
-  for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){if(!dr&&!dc)continue;const nr=r+dr,nc=c+dc;if(nr>=0&&nr<GRID&&nc>=0&&nc<GRID&&gs.owner[nr*GRID+nc]===pi)return true}
-  return false;
+  for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+    if(!dr&&!dc) continue;
+    const nr=r+dr,nc=c+dc;
+    if(nr<0||nr>=GRID||nc<0||nc>=GRID) continue;
+    if(gs.owner[nr*GRID+nc]===pi) return true;
+  }return false;
 }
 
-function applyAction(pi,type,data={}){
-  if(!gs||gs.curP!==pi||gs.acts>=MAX_ACT)return false;
+// Authoritative action applier (runs on host; guests send requests)
+function applyAction(pi,type,data){
+  if(!gs||gs.curP!==pi) return false;
+  if(gs.acts>=MAX_ACT) return false;
   const p=gs.res[pi];let ok=false,msg='';
   if(type==='expand_tile'){
-    const{idx}=data;if(gs.owner[idx]<0&&isAdj(idx,pi)&&p.e>=5){gs.owner[idx]=pi;p.e-=5;gs.acts++;msg=`${FD[players[pi].faction].icon} Colonized`;ok=true}
-  }else if(type==='attack_tile'){
-    const{idx}=data,prev=gs.owner[idx];
-    if(prev>=0&&prev!==pi&&isAdj(idx,pi)&&p.e>=5&&p.f>=4){
-      const def=2+(gs.shielded[idx]?4:0)+Math.floor(Math.random()*3),atk=p.f+Math.floor(Math.random()*4);
-      if(atk>def){gs.owner[idx]=pi;p.e-=5;gs.acts++;gs.res[prev].f=Math.max(0,gs.res[prev].f-2);gs.shielded[idx]=false;msg=`⚡ Invasion SUCCESS (${atk}v${def})`}
-      else{p.e-=2;p.f=Math.max(1,p.f-2);gs.acts++;msg=`⚔ Repelled (${atk}v${def})`}
-      ok=true;
+    const idx=data.idx;
+    if(gs.owner[idx]<0&&isAdj(idx,pi)&&p.e>=5){
+      gs.owner[idx]=pi;p.e-=5;gs.acts++;
+      msg=`${FDATA[players[pi].faction].icon} Colonized (${idx%GRID+1},${Math.floor(idx/GRID)+1})`;ok=true;
     }
-  }else if(type==='expand'){
-    for(let i=0;i<TOTAL&&!ok;i++)if(gs.owner[i]<0&&isAdj(i,pi)&&p.e>=5){gs.owner[i]=pi;p.e-=5;gs.acts++;msg=`${FD[players[pi].faction].icon} Colonized`;ok=true}
-    if(!ok)msg=p.e<5?'Need 5 energy.':'No adjacent sectors.';
-  }else if(type==='recruit'){
-    if(p.b>=3){p.f+=2;p.b-=3;gs.acts++;msg='+2 fleet.';ok=true}else msg='Need 3 biomass.';
-  }else if(type==='research'){
-    if(p.r>=4){p.tech=(p.tech||0)+1;p.r-=4;FD[players[pi].faction].inc.e++;gs.acts++;msg='🔬 Tech advanced!';ok=true}else msg='Need 4 research.';
-  }else if(type==='fortify'){
-    const mine=[];for(let i=0;i<TOTAL;i++)if(gs.owner[i]===pi&&!gs.shielded[i])mine.push(i);
-    if(mine.length&&p.e>=6){gs.shielded[mine[Math.floor(Math.random()*mine.length)]]=true;p.e-=6;gs.acts++;msg='🛡 Shield erected.';ok=true}else msg=p.e<6?'Need 6 energy.':'No unshielded sectors.';
-  }else if(type==='trivia_reward'){p.e+=6;gs.acts++;msg='🌟 +6 Energy!';ok=true}
-  else if(type==='trivia_fail'){gs.acts++;ok=true}
-  if(msg)addLog(msg);
+  } else if(type==='attack_tile'){
+    const idx=data.idx;const prev=gs.owner[idx];
+    if(prev>=0&&prev!==pi&&isAdj(idx,pi)&&p.e>=5&&p.f>=4){
+      const fortB=gs.shielded[idx]?4:0;
+      const def=2+fortB+Math.floor(Math.random()*3);
+      const atk=p.f+Math.floor(Math.random()*4);
+      if(atk>def){
+        gs.owner[idx]=pi;p.e-=5;gs.acts++;
+        gs.res[prev].f=Math.max(0,gs.res[prev].f-2);
+        if(gs.shielded[idx]) gs.shielded[idx]=false;
+        msg=`⚡ Invasion SUCCESS (ATK ${atk} vs DEF ${def})`;
+      } else {
+        p.e-=2;p.f=Math.max(1,p.f-2);gs.acts++;
+        msg=`⚔ Assault repelled (ATK ${atk} vs DEF ${def})`;
+      }ok=true;
+    }
+  } else if(type==='expand'){
+    for(let i=0;i<TOTAL&&!ok;i++){
+      if(gs.owner[i]<0&&isAdj(i,pi)&&p.e>=5){
+        gs.owner[i]=pi;p.e-=5;gs.acts++;
+        msg=`${FDATA[players[pi].faction].icon} Colonized sector`;ok=true;
+      }
+    }
+    if(!ok) msg=p.e<5?'Need 5 energy.':'No adjacent neutral sectors.';
+  } else if(type==='recruit'){
+    if(p.b>=3){p.f+=2;p.b-=3;gs.acts++;msg='+2 fleet deployed.';ok=true;}
+    else msg='Need 3 biomass.';
+  } else if(type==='research'){
+    if(p.r>=4){p.tech=(p.tech||0)+1;p.r-=4;FDATA[players[pi].faction].inc.e++;gs.acts++;msg='🔬 Tech advanced!';ok=true;}
+    else msg='Need 4 research.';
+  } else if(type==='fortify'){
+    const mine=[];for(let i=0;i<TOTAL;i++) if(gs.owner[i]===pi&&!gs.shielded[i]) mine.push(i);
+    if(mine.length&&p.e>=6){
+      const idx=mine[Math.floor(Math.random()*mine.length)];
+      gs.shielded[idx]=true;p.e-=6;gs.acts++;msg='🛡 Shield grid erected.';ok=true;
+    } else msg=p.e<6?'Need 6 energy.':'No unshielded sectors.';
+  } else if(type==='trivia_reward'){
+    p.e+=6;gs.acts++;msg=`🌟 Trivia correct! +6 Energy`;ok=true;
+  } else if(type==='trivia_fail'){
+    gs.acts++;msg=`❌ Trivia failed.`;ok=true;
+  }
+  if(msg){addLog(msg);}
   return ok;
 }
 
 async function act(pi,type){
-  if(!gs||pi!==mySlot){addLog('Not your panel.');return}
-  if(!isMyTurn()){addLog('Not your turn.');return}
-  if(gs.acts>=MAX_ACT){addLog('No actions left.');return}
-  applyAction(pi,type);refreshHUD();syncTiles();checkVictory();await push();
+  if(!gs||pi!==mySlot){addLog("Not your panel.");return;}
+  if(!isMyTurn()){addLog("Not your turn.");return;}
+  if(gs.acts>=MAX_ACT){addLog("No actions left.");return;}
+  if(isHost){
+    applyAction(pi,type,{});
+    broadcast({type:'state',gs,players});
+    refreshHUD();syncTiles();checkVictory();
+  } else {
+    sendToHost({type:'action',slot:mySlot,action:type,data:{}});
+  }
 }
 
 async function clickTile(idx){
-  if(!gs||!isMyTurn()||gs.acts>=MAX_ACT)return;
-  const pi=mySlot,p=gs.res[pi];
-  if(gs.owner[idx]===pi||!isAdj(idx,pi))return;
-  if(p.e<5){addLog('Need 5 energy.');return}
-  const enemy=gs.owner[idx]>=0;
-  if(enemy&&p.f<4){addLog('Need 4+ fleet to invade.');return}
-  applyAction(pi,enemy?'attack_tile':'expand_tile',{idx});
-  refreshHUD();syncTiles();checkVictory();await push();
+  if(!gs) return;
+  if(!isMyTurn()){addLog("Awaiting your turn.");return;}
+  if(gs.acts>=MAX_ACT){addLog("No actions left.");return;}
+  const pi=mySlot;
+  if(gs.owner[idx]===pi) return;
+  if(!isAdj(idx,pi)){addLog("Not adjacent to your territory.");return;}
+  const p=gs.res[pi];
+  if(p.e<5){addLog("Need 5 energy.");return;}
+  const prev=gs.owner[idx];
+  let atype='expand_tile';
+  if(prev>=0){
+    if(p.f<4){addLog("Need 4+ fleet to invade.");return;}
+    atype='attack_tile';
+  }
+  if(isHost){
+    applyAction(pi,atype,{idx});
+    broadcast({type:'state',gs,players});
+    refreshHUD();syncTiles();checkVictory();
+  } else {
+    sendToHost({type:'action',slot:mySlot,action:atype,data:{idx}});
+  }
 }
 
 async function endTurn(){
-  if(!gs||!isMyTurn()){addLog('Not your turn.');return}
-  const pi=mySlot,p=gs.res[pi],fi=players[pi].faction,inc=FD[fi].inc;
-  const cnt=gs.owner.filter(o=>o===pi).length,bonus=Math.floor(cnt/8);
-  p.e+=inc.e+bonus;p.b+=inc.b+bonus;p.f+=inc.f;p.r+=inc.r;
-  gs.curP=(gs.curP+1)%gs.numP;gs.acts=0;if(gs.curP===0)gs.round++;
-  addLog(`${FD[fi].icon} ${players[pi].name} ended turn.`);
-  refreshHUD();syncTiles();await push();
+  if(!gs||!isMyTurn()){addLog("Not your turn.");return;}
+  const pi=mySlot;
+  const p=gs.res[pi];
+  const myCount=gs.owner.filter(o=>o===pi).length;
+  const bonus=Math.floor(myCount/8);
+  const fi=players[pi].faction;
+  const inc=FDATA[fi].inc;
+  p.e+=inc.e+bonus; p.b+=inc.b+bonus; p.f+=inc.f; p.r+=inc.r;
+  gs.curP=(gs.curP+1)%gs.numP;
+  gs.acts=0;
+  if(gs.curP===0) gs.round++;
+  addLog(`${FDATA[fi].icon} ${players[pi].name} ended turn.`);
+  if(isHost){
+    broadcast({type:'state',gs,players});
+    refreshHUD();syncTiles();
+  } else {
+    sendToHost({type:'action',slot:mySlot,action:'end_turn',data:{}});
+    refreshHUD();
+  }
 }
 
+// Host also handles end_turn from guests
+function handleHostReceiveExtra(conn,msg){
+  if(msg.type==='action'&&msg.action==='end_turn'){
+    const pi=msg.slot;
+    if(!gs||gs.curP!==pi) return;
+    const p=gs.res[pi];
+    const myCount=gs.owner.filter(o=>o===pi).length;
+    const bonus=Math.floor(myCount/8);
+    const fi=players[pi].faction;
+    const inc=FDATA[fi].inc;
+    p.e+=inc.e+bonus;p.b+=inc.b+bonus;p.f+=inc.f;p.r+=inc.r;
+    gs.curP=(gs.curP+1)%gs.numP;gs.acts=0;
+    if(gs.curP===0) gs.round++;
+    addLog(`${FDATA[fi].icon} ${players[pi].name} ended turn.`);
+    broadcast({type:'state',gs,players});
+    refreshHUD();syncTiles();
+  }
+}
+
+// Patch handleHostReceive to also handle end_turn
+const _origHandleHostReceive=handleHostReceive;
+function handleHostReceive(conn,msg){
+  if(msg.type==='action') handleHostReceiveExtra(conn,msg);
+  _origHandleHostReceive(conn,msg);
+}
+
+// ══════════════════════════════════════════════════
+//  HUD UPDATE
+// ══════════════════════════════════════════════════
 function refreshHUD(){
-  if(!gs||!players.length)return;
+  if(!gs||!players.length) return;
   players.forEach((pl,i)=>{
-    const fi=pl.faction,res=gs.res[i],tc=gs.owner.filter(o=>o===i).length;
-    document.getElementById('n'+i).textContent=FD[fi].icon+' '+pl.name;
-    document.getElementById('y'+i).style.display=i===mySlot?'inline':'none';
-    if(res){['e','b','f','r'].forEach(k=>document.getElementById(k+i).textContent=res[k])}
-    document.getElementById('tr'+i).textContent=tc;
-    document.getElementById('tb'+i).style.width=(tc/TOTAL*100)+'%';
-    const pp=document.getElementById('pp'+i);
-    pp.style.opacity=i===gs.curP?'1':'0.44';pp.style.transform=i===gs.curP?'scale(1.02)':'scale(1)';
-    document.getElementById('pb'+i).style.display=i===mySlot?'flex':'none';
+    const fi=pl.faction;
+    const res=gs.res[i];
+    document.getElementById(`n${i}`).textContent=`${FDATA[fi].icon} ${pl.name}`;
+    document.getElementById(`y${i}`).style.display=i===mySlot?'inline':'none';
+    if(res){
+      document.getElementById(`e${i}`).textContent=res.e;
+      document.getElementById(`b${i}`).textContent=res.b;
+      document.getElementById(`f${i}`).textContent=res.f;
+      document.getElementById(`r${i}`).textContent=res.r;
+    }
+    const tc=gs.owner.filter(o=>o===i).length;
+    document.getElementById(`tr${i}`).textContent=tc;
+    document.getElementById(`tb${i}`).style.width=(tc/TOTAL*100)+'%';
+    const pp=document.getElementById(`pp${i}`);
+    pp.style.opacity=i===gs.curP?'1':'0.44';
+    pp.style.transform=i===gs.curP?'scale(1.02)':'scale(1)';
+    document.getElementById(`pbtns${i}`).style.display=i===mySlot?'flex':'none';
   });
-  for(let i=players.length;i<4;i++)document.getElementById('pp'+i).style.display='none';
+  for(let i=players.length;i<4;i++) document.getElementById(`pp${i}`).style.display='none';
   const cfi=players[gs.curP]?.faction||0;
-  document.getElementById('cr').textContent='CYCLE '+gs.round;
-  document.getElementById('ct').textContent=FD[cfi].icon+' '+(players[gs.curP]?.name||'');
-  document.getElementById('ca').textContent='ACTIONS: '+(MAX_ACT-gs.acts)+'/'+MAX_ACT;
+  document.getElementById('cround').textContent=`CYCLE ${gs.round}`;
+  document.getElementById('cturn').textContent=`${FDATA[cfi].icon} ${players[gs.curP]?.name||''}`;
+  document.getElementById('cacts').textContent=`ACTIONS: ${MAX_ACT-gs.acts}/${MAX_ACT}`;
   const mt=isMyTurn();
-  document.getElementById('my').style.display=mt?'block':'none';
-  document.getElementById('eb').style.opacity=mt?'1':'0.3';
-  document.getElementById('eb').style.pointerEvents=mt?'all':'none';
-  document.getElementById('log').innerHTML=(gs.log||[]).slice(0,8).map((e,i)=>`<div class="le${i===0?' f':''}">${e}</div>`).join('');
+  document.getElementById('myturn').style.display=mt?'block':'none';
+  document.getElementById('end-btn').style.opacity=mt?'1':'0.3';
+  document.getElementById('end-btn').style.pointerEvents=mt?'all':'none';
+  // log
+  const logEl=document.getElementById('log');
+  logEl.innerHTML=(gs.log||[]).slice(0,10).map((e,i)=>`<div class="le${i===0?' f':''}">${e}</div>`).join('');
 }
-function addLog(m){if(!gs)return;gs.log=gs.log||[];gs.log.unshift(m);if(gs.log.length>20)gs.log.pop();refreshHUD()}
-function checkVictory(){if(!gs)return;const w=players.findIndex((_,i)=>gs.owner.filter(o=>o===i).length>=200);if(w>=0){document.getElementById('vsm').textContent=FD[players[w].faction].name+' achieves galactic supremacy!';document.getElementById('vs').style.display='flex'}}
-
-// ── THREE.JS (lazy init) ──────────────────────────
-let renderer,scene,camera,camT=Math.PI/4,camP=Math.PI/3.5,camR=36,camTgt;
-let tileMeshes=[],tileFrames=[],tileH=[],stMeshes={},flMeshes={},shMat,neutralMat,debrisPts,dG,ray,mpos,hoverIdx=-1,animT=0,animRunning=false;
-
-function initThree(){
-  if(renderer)return;
-  const canvas=document.getElementById('c');
-  renderer=new THREE.WebGLRenderer({canvas,antialias:true});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.setClearColor(0x00000f);renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;
-  scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x000510,0.011);
-  camera=new THREE.PerspectiveCamera(48,1,0.1,400);camTgt=new THREE.Vector3(9.5,0,9.5);updateCam();
-  scene.add(new THREE.AmbientLight(0x050a1e,3));
-  const kl=new THREE.DirectionalLight(0x6080ff,1.8);kl.position.set(15,30,10);kl.castShadow=true;kl.shadow.mapSize.set(2048,2048);scene.add(kl);
-  [[0x00f5ff,[-1,2,-1]],[0xbf00ff,[-1,2,21]],[0xff6600,[21,2,-1]],[0x00ff88,[21,2,21]]].forEach(([col,pos])=>{const l=new THREE.PointLight(col,2.8,22);l.position.set(...pos);scene.add(l)});
-  const n=5000,sp=new Float32Array(n*3),sc=new Float32Array(n*3),pal=[[.8,.9,1],[.6,.7,1],[1,.6,.8],[.7,1,.9]];
-  for(let i=0;i<n;i++){const r2=110+Math.random()*160,th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);sp[i*3]=r2*Math.sin(ph)*Math.cos(th)+9.5;sp[i*3+1]=r2*Math.cos(ph);sp[i*3+2]=r2*Math.sin(ph)*Math.sin(th)+9.5;const p=pal[i%4],br=.4+Math.random()*.6;sc[i*3]=p[0]*br;sc[i*3+1]=p[1]*br;sc[i*3+2]=p[2]*br}
-  const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(sp,3));sg.setAttribute('color',new THREE.BufferAttribute(sc,3));scene.add(new THREE.Points(sg,new THREE.PointsMaterial({size:.32,vertexColors:true,transparent:true,opacity:.85,sizeAttenuation:true})));
-  [{c:0x001050,x:-8},{c:0x200040,x:24},{c:0x400010,x:-4},{c:0x003020,x:26}].forEach((n,i)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(28+i*5,8,6),new THREE.MeshBasicMaterial({color:n.c,transparent:true,opacity:.05,side:THREE.BackSide,depthWrite:false}));m.position.set(n.x,i*3-4,n.x);scene.add(m)});
-  const floor=new THREE.Mesh(new THREE.PlaneGeometry(GRID+10,GRID+10),new THREE.MeshLambertMaterial({color:0x000510,transparent:true,opacity:.95}));floor.rotation.x=-Math.PI/2;floor.position.set(9.5,-.44,9.5);scene.add(floor);
-  neutralMat=new THREE.MeshLambertMaterial({color:0x040814,emissive:0x010408});
-  shMat=new THREE.MeshLambertMaterial({color:0x8080ff,emissive:0x303080,transparent:true,opacity:.9});
-  tileH=Array.from({length:TOTAL},()=>Math.random()*.09);
-  dG=new THREE.BufferGeometry();const dN=400,dP=new Float32Array(dN*3),dC=new Float32Array(dN*3);
-  for(let i=0;i<dN;i++){dP[i*3]=Math.random()*GRID-.5;dP[i*3+1]=Math.random()*5+.2;dP[i*3+2]=Math.random()*GRID-.5;const p=[[0,.8,1],[.5,0,1],[1,.3,0],[0,1,.5]][i%4];dC[i*3]=p[0];dC[i*3+1]=p[1];dC[i*3+2]=p[2]}
-  dG.setAttribute('position',new THREE.BufferAttribute(dP,3));dG.setAttribute('color',new THREE.BufferAttribute(dC,3));
-  debrisPts=new THREE.Points(dG,new THREE.PointsMaterial({size:.04,vertexColors:true,transparent:true,opacity:.4,sizeAttenuation:true}));
-  ray=new THREE.Raycaster();mpos=new THREE.Vector2();
-  canvas.addEventListener('mousemove',e=>{if(!gs)return;const rect=canvas.getBoundingClientRect();mpos.x=((e.clientX-rect.left)/rect.width)*2-1;mpos.y=-((e.clientY-rect.top)/rect.height)*2+1;ray.setFromCamera(mpos,camera);const hits=ray.intersectObjects(tileMeshes);if(hits.length){hoverIdx=hits[0].object.userData.idx;showTip(hoverIdx,e.clientX,e.clientY)}else{hoverIdx=-1;hideTip()}});
-  canvas.addEventListener('mouseleave',()=>{hoverIdx=-1;hideTip()});
-  canvas.addEventListener('click',()=>{if(hoverIdx>=0&&gs)clickTile(hoverIdx)});
-  let drag=false,lx=0,ly=0;
-  canvas.addEventListener('mousedown',e=>{drag=true;lx=e.clientX;ly=e.clientY});
-  window.addEventListener('mouseup',()=>drag=false);
-  window.addEventListener('mousemove',e=>{if(!drag)return;camT-=(e.clientX-lx)*.005;camP=Math.max(.28,Math.min(Math.PI/2.05,camP+(e.clientY-ly)*.005));lx=e.clientX;ly=e.clientY;updateCam()});
-  canvas.addEventListener('wheel',e=>{camR=Math.max(10,Math.min(65,camR+e.deltaY*.05));updateCam()},{passive:true});
-  resize();window.addEventListener('resize',resize);
+function addLog(msg){
+  if(!gs) return;
+  if(!gs.log) gs.log=[];
+  gs.log.unshift(msg);if(gs.log.length>22) gs.log.pop();
+  refreshHUD();
+}
+function checkVictory(){
+  if(!gs) return;
+  const winner=players.findIndex((_,i)=>gs.owner.filter(o=>o===i).length>=200);
+  if(winner>=0){
+    const fi=players[winner].faction;
+    document.getElementById('vs-msg').textContent=`${FDATA[fi].name} achieves galactic supremacy!`;
+    document.getElementById('vs').style.display='flex';
+  }
 }
 
-function updateCam(){if(!camera||!camTgt)return;camera.position.set(camTgt.x+camR*Math.sin(camP)*Math.sin(camT),camTgt.y+camR*Math.cos(camP),camTgt.z+camR*Math.sin(camP)*Math.cos(camT));camera.lookAt(camTgt)}
-function resetCam(){camT=Math.PI/4;camP=Math.PI/3.5;camR=36;updateCam()}
-function rotCam(d){camT+=d*.18;updateCam()}
-function tiltCam(d){camP=Math.max(.28,Math.min(Math.PI/2.05,camP+d*.09));updateCam()}
-function zoomCam(d){camR=Math.max(10,Math.min(65,camR+d*3));updateCam()}
-function resize(){if(!renderer)return;renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix()}
+// ══════════════════════════════════════════════════
+//  THREE.JS
+// ══════════════════════════════════════════════════
+const canvas=document.getElementById('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.setClearColor(0x00000f);
+renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;
+const scene=new THREE.Scene();
+scene.fog=new THREE.FogExp2(0x000510,0.011);
+const camera=new THREE.PerspectiveCamera(48,1,0.1,400);
+let camT=Math.PI/4,camP=Math.PI/3.5,camR=36;
+const camTgt=new THREE.Vector3(9.5,0,9.5);
+function updateCam(){camera.position.set(camTgt.x+camR*Math.sin(camP)*Math.sin(camT),camTgt.y+camR*Math.cos(camP),camTgt.z+camR*Math.sin(camP)*Math.cos(camT));camera.lookAt(camTgt);}
+function resetCam(){camT=Math.PI/4;camP=Math.PI/3.5;camR=36;updateCam();}
+function rotCam(d){camT+=d*0.18;updateCam();}
+function tiltCam(d){camP=Math.max(0.28,Math.min(Math.PI/2.05,camP+d*0.09));updateCam();}
+function zoomCam(d){camR=Math.max(10,Math.min(65,camR+d*3));updateCam();}
 
+scene.add(new THREE.AmbientLight(0x050a1e,3));
+const kl=new THREE.DirectionalLight(0x6080ff,1.8);kl.position.set(15,30,10);kl.castShadow=true;kl.shadow.mapSize.set(2048,2048);kl.shadow.camera.near=1;kl.shadow.camera.far=120;kl.shadow.camera.left=-35;kl.shadow.camera.right=35;kl.shadow.camera.top=35;kl.shadow.camera.bottom=-35;scene.add(kl);
+[[0x00f5ff,[-1,2,-1]],[0xbf00ff,[-1,2,21]],[0xff6600,[21,2,-1]],[0x00ff88,[21,2,21]]].forEach(([c,p])=>{const l=new THREE.PointLight(c,2.8,22);l.position.set(...p);scene.add(l);});
+
+// Starfield
+(()=>{
+  const n=5000,pos=new Float32Array(n*3),col=new Float32Array(n*3);
+  const pal=[[.8,.9,1],[.6,.7,1],[1,.6,.8],[.7,1,.9]];
+  for(let i=0;i<n;i++){
+    const r2=110+Math.random()*160,th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);
+    pos[i*3]=r2*Math.sin(ph)*Math.cos(th)+9.5;pos[i*3+1]=r2*Math.cos(ph);pos[i*3+2]=r2*Math.sin(ph)*Math.sin(th)+9.5;
+    const p=pal[i%4],brt=.4+Math.random()*.6;col[i*3]=p[0]*brt;col[i*3+1]=p[1]*brt;col[i*3+2]=p[2]*brt;
+  }
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));
+  scene.add(new THREE.Points(g,new THREE.PointsMaterial({size:.32,vertexColors:true,transparent:true,opacity:.85,sizeAttenuation:true})));
+})();
+// Nebulae
+[{c:0x001050,x:-8},{c:0x200040,x:24},{c:0x400010,x:-4},{c:0x003020,x:26}].forEach((n,i)=>{
+  const m=new THREE.Mesh(new THREE.SphereGeometry(28+i*5,8,6),new THREE.MeshBasicMaterial({color:n.c,transparent:true,opacity:.05,side:THREE.BackSide,depthWrite:false}));
+  m.position.set(n.x,i*3-4,n.x);scene.add(m);
+});
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(GRID+10,GRID+10),new THREE.MeshLambertMaterial({color:0x000510,transparent:true,opacity:.95}));
+floor.rotation.x=-Math.PI/2;floor.position.set(9.5,-0.44,9.5);scene.add(floor);
+
+// Tiles
+const tileMeshes=[],tileFrames=[],tileH=Array.from({length:TOTAL},()=>Math.random()*0.09);
+const neutralMat=new THREE.MeshLambertMaterial({color:0x040814,emissive:0x010408});
+const pMats2=FDATA.map(f=>{const c=new THREE.Color(f.col);return new THREE.MeshLambertMaterial({color:c.clone().multiplyScalar(.35),emissive:c.clone().multiplyScalar(.1)});});
 function buildTerrain(){
-  for(let row=0;row<GRID;row++)for(let col=0;col<GRID;col++){
+  const ts=1.0,tg=0.07;
+  for(let row=0;row<GRID;row++) for(let col=0;col<GRID;col++){
     const idx=row*GRID+col,h=tileH[idx];
-    const m=new THREE.Mesh(new THREE.BoxGeometry(.93,.14+h,.93),neutralMat.clone());
-    m.position.set(col,-((.14+h)/2)+h*.5,row);m.receiveShadow=true;m.userData={idx};scene.add(m);tileMeshes.push(m);
-    const s=.88,fl=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-s/2,h,-s/2),new THREE.Vector3(s/2,h,-s/2),new THREE.Vector3(s/2,h,s/2),new THREE.Vector3(-s/2,h,s/2),new THREE.Vector3(-s/2,h,-s/2)]),new THREE.LineBasicMaterial({color:0x0a1428,transparent:true,opacity:.22}));
+    const m=new THREE.Mesh(new THREE.BoxGeometry(ts-tg,.14+h,ts-tg),neutralMat.clone());
+    m.position.set(col,-(.14+h)/2+h*.5,row);m.receiveShadow=true;m.userData={idx,r:row,c:col};
+    scene.add(m);tileMeshes.push(m);
+    const s=ts-tg-.05;
+    const fl=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-s/2,h,-s/2),new THREE.Vector3(s/2,h,-s/2),new THREE.Vector3(s/2,h,s/2),new THREE.Vector3(-s/2,h,s/2),new THREE.Vector3(-s/2,h,-s/2)]),new THREE.LineBasicMaterial({color:0x0a1428,transparent:true,opacity:.22}));
     fl.position.set(col,0,row);scene.add(fl);tileFrames.push(fl);
   }
   const glm=new THREE.LineBasicMaterial({color:0x080f1e,transparent:true,opacity:.3});
-  for(let i=0;i<=GRID;i++){scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-.5,.02,i-.5),new THREE.Vector3(GRID-.5,.02,i-.5)]),glm));scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(i-.5,.02,-.5),new THREE.Vector3(i-.5,.02,GRID-.5)]),glm))}
+  for(let i=0;i<=GRID;i++){
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-.5,.02,i-.5),new THREE.Vector3(GRID-.5,.02,i-.5)]),glm));
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(i-.5,.02,-.5),new THREE.Vector3(i-.5,.02,GRID-.5)]),glm));
+  }
 }
 
+const stMeshes={},flMeshes={};
+const shMat=new THREE.MeshLambertMaterial({color:0x8080ff,emissive:0x303080,transparent:true,opacity:.9});
 function addStation(idx){
-  if(stMeshes[idx])return;
+  if(stMeshes[idx]) return;
   const r=Math.floor(idx/GRID),c=idx%GRID,g=new THREE.Group();
   g.add(Object.assign(new THREE.Mesh(new THREE.SphereGeometry(.15,10,7),shMat.clone()),{position:new THREE.Vector3(0,.26,0)}));
-  const ring=new THREE.Mesh(new THREE.TorusGeometry(.24,.033,7,18),new THREE.MeshLambertMaterial({color:0x4040ff,emissive:0x101040}));ring.position.y=.26;ring.rotation.x=Math.PI/2;g.add(ring);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(.24,.033,7,18),new THREE.MeshLambertMaterial({color:0x4040ff,emissive:0x101040}));
+  ring.position.y=.26;ring.rotation.x=Math.PI/2;g.add(ring);
   g.add(Object.assign(new THREE.Mesh(new THREE.ConeGeometry(.055,.2,6),new THREE.MeshLambertMaterial({color:0x6080ff,emissive:0x101030})),{position:new THREE.Vector3(0,.52,0)}));
   g.position.set(c,tileH[idx]*.5,r);g.castShadow=true;scene.add(g);stMeshes[idx]=g;
 }
-function removeStation(idx){if(stMeshes[idx]){scene.remove(stMeshes[idx]);delete stMeshes[idx]}}
+function removeStation(idx){if(stMeshes[idx]){scene.remove(stMeshes[idx]);delete stMeshes[idx];}}
 function updateFleet(idx,ow){
-  if(flMeshes[idx]){scene.remove(flMeshes[idx]);delete flMeshes[idx]}
-  if(ow<0)return;
-  const r=Math.floor(idx/GRID),c=idx%GRID,col=FD[ow%4].col;
+  if(flMeshes[idx]){scene.remove(flMeshes[idx]);delete flMeshes[idx];}
+  if(ow<0) return;
+  const r=Math.floor(idx/GRID),c=idx%GRID,col=FDATA[ow%4].col;
   const m=new THREE.Mesh(new THREE.ConeGeometry(.08,.18,5),new THREE.MeshLambertMaterial({color:col,emissive:new THREE.Color(col).multiplyScalar(.35)}));
   m.position.set(c+.15,tileH[idx]*.5+.24,r-.15);m.rotation.z=Math.PI;scene.add(m);flMeshes[idx]=m;
 }
 function refreshTile(idx){
-  const mesh=tileMeshes[idx],frame=tileFrames[idx];if(!mesh||!gs)return;
+  const mesh=tileMeshes[idx],frame=tileFrames[idx];if(!mesh||!gs) return;
   const o=gs.owner[idx];
-  if(o>=0){const fi=players[o]?.faction??0,col=new THREE.Color(FD[fi].col);mesh.material.color.set(col.clone().multiplyScalar(.38));mesh.material.emissive.set(col.clone().multiplyScalar(gs.shielded[idx]?.38:.12));if(frame){frame.material.color.set(FD[fi].col);frame.material.opacity=gs.shielded[idx]?1:.48};if(gs.shielded[idx])addStation(idx);else removeStation(idx)}
-  else{mesh.material.color.set(0x040814);mesh.material.emissive.set(0x010408);if(frame){frame.material.color.set(0x0a1428);frame.material.opacity=.2};removeStation(idx)}
+  if(o>=0){
+    const fi=players[o]?.faction??0;
+    const col=new THREE.Color(FDATA[fi].col);
+    mesh.material.color.set(col.clone().multiplyScalar(.38));
+    mesh.material.emissive.set(col.clone().multiplyScalar(gs.shielded[idx]?.38:.12));
+    if(frame){frame.material.color.set(FDATA[fi].col);frame.material.opacity=gs.shielded[idx]?1:.48;}
+    if(gs.shielded[idx]) addStation(idx); else removeStation(idx);
+  } else {
+    mesh.material.color.set(0x040814);mesh.material.emissive.set(0x010408);
+    if(frame){frame.material.color.set(0x0a1428);frame.material.opacity=.2;}
+    removeStation(idx);
+  }
   updateFleet(idx,o);
 }
-function syncTiles(){for(let i=0;i<TOTAL;i++)refreshTile(i)}
-function showTip(idx,x,y){if(!gs)return;const o=gs.owner[idx],r=Math.floor(idx/GRID),c=idx%GRID,t=document.getElementById('tip');let h=`<strong>(${c+1}·${r+1})</strong>`;h+=o>=0?`${FD[players[o]?.faction??0].icon} ${players[o]?.name}<br>`:'Unclaimed<br>';if(gs.shielded[idx])h+='🛡 Shielded';t.innerHTML=h;t.style.display='block';t.style.left=(x+12)+'px';t.style.top=(y-12)+'px'}
-function hideTip(){document.getElementById('tip').style.display='none'}
+function syncTiles(){for(let i=0;i<TOTAL;i++) refreshTile(i);}
 
+// Debris
+const dG=new THREE.BufferGeometry();const dN=400;
+const dP=new Float32Array(dN*3),dC=new Float32Array(dN*3);
+for(let i=0;i<dN;i++){dP[i*3]=Math.random()*GRID-.5;dP[i*3+1]=Math.random()*5+.2;dP[i*3+2]=Math.random()*GRID-.5;const p=[[0,.8,1],[.5,0,1],[1,.3,0],[0,1,.5]][i%4];dC[i*3]=p[0];dC[i*3+1]=p[1];dC[i*3+2]=p[2];}
+dG.setAttribute('position',new THREE.BufferAttribute(dP,3));dG.setAttribute('color',new THREE.BufferAttribute(dC,3));
+const debrisPts=new THREE.Points(dG,new THREE.PointsMaterial({size:.042,vertexColors:true,transparent:true,opacity:.42,sizeAttenuation:true}));
+
+// Raycaster
+const ray=new THREE.Raycaster(),mpos=new THREE.Vector2();let hoverIdx=-1;
+canvas.addEventListener('mousemove',e=>{
+  if(!gs) return;
+  const rect=canvas.getBoundingClientRect();
+  mpos.x=((e.clientX-rect.left)/rect.width)*2-1;mpos.y=-((e.clientY-rect.top)/rect.height)*2+1;
+  ray.setFromCamera(mpos,camera);
+  const hits=ray.intersectObjects(tileMeshes);
+  if(hits.length){const idx=hits[0].object.userData.idx;hoverIdx=idx;showTip(idx,e.clientX,e.clientY);}
+  else{hoverIdx=-1;hideTip();}
+});
+canvas.addEventListener('mouseleave',()=>{hoverIdx=-1;hideTip();});
+canvas.addEventListener('click',()=>{if(hoverIdx>=0&&gs) clickTile(hoverIdx);});
+function showTip(idx,x,y){
+  if(!gs) return;
+  const o=gs.owner[idx],r=Math.floor(idx/GRID),c=idx%GRID;
+  const t=document.getElementById('tip');
+  let h=`<strong>(${c+1}·${r+1})</strong>`;
+  if(o>=0){const fi=players[o]?.faction??0;h+=`${FDATA[fi].icon} ${players[o]?.name}<br>`;}
+  else h+='Unclaimed void<br>';
+  if(gs.shielded[idx]) h+='🛡 Shielded';
+  t.innerHTML=h;t.style.display='block';t.style.left=(x+12)+'px';t.style.top=(y-12)+'px';
+}
+function hideTip(){document.getElementById('tip').style.display='none';}
+
+// Drag orbit
+let drag=false,lx=0,ly=0;
+canvas.addEventListener('mousedown',e=>{drag=true;lx=e.clientX;ly=e.clientY;});
+window.addEventListener('mouseup',()=>drag=false);
+window.addEventListener('mousemove',e=>{if(!drag)return;camT-=(e.clientX-lx)*.005;camP=Math.max(.28,Math.min(Math.PI/2.05,camP+(e.clientY-ly)*.005));lx=e.clientX;ly=e.clientY;updateCam();});
+canvas.addEventListener('wheel',e=>{camR=Math.max(10,Math.min(65,camR+e.deltaY*.05));updateCam();},{passive:true});
+
+function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
+window.addEventListener('resize',resize);resize();
+
+let animT=0,animRunning=false;
 function animate(){
-  if(!animRunning)return;requestAnimationFrame(animate);animT+=.007;
+  if(!animRunning) return;
+  requestAnimationFrame(animate);animT+=.007;
   const dp=dG.attributes.position.array;
-  for(let i=0;i<400;i++){dp[i*3+1]+=.0025;if(dp[i*3+1]>5){dp[i*3+1]=.1;dp[i*3]=Math.random()*GRID-.5;dp[i*3+2]=Math.random()*GRID-.5}}
+  for(let i=0;i<dN;i++){dp[i*3+1]+=.0025;dp[i*3]+=Math.sin(animT+i*.3)*.0007;if(dp[i*3+1]>5){dp[i*3+1]=.1;dp[i*3]=Math.random()*GRID-.5;dp[i*3+2]=Math.random()*GRID-.5;}}
   dG.attributes.position.needsUpdate=true;
-  if(gs)tileMeshes.forEach(m=>{const o=gs.owner[m.userData.idx];if(o===gs.curP&&players[o]){const fi=players[o].faction,col=new THREE.Color(FD[fi].col),pulse=.5+Math.sin(animT*2.5+m.userData.idx*.4)*.5;m.material.emissive.set(col.clone().multiplyScalar(.06+pulse*.16))}});
-  Object.values(stMeshes).forEach(g=>{if(g.children[1])g.children[1].rotation.y+=.022;if(g.children[0])g.children[0].position.y=.26+Math.sin(animT*2)*.03});
-  camTgt.y=Math.sin(animT*.25)*.06;updateCam();renderer.render(scene,camera);
+  if(gs){
+    tileMeshes.forEach(m=>{
+      const o=gs.owner[m.userData.idx];
+      if(o===gs.curP&&players[o]){
+        const fi=players[o].faction;const col=new THREE.Color(FDATA[fi].col);
+        const pulse=.5+Math.sin(animT*2.5+m.userData.idx*.4)*.5;
+        m.material.emissive.set(col.clone().multiplyScalar(.06+pulse*.16));
+      }
+    });
+  }
+  Object.values(stMeshes).forEach(g=>{if(g.children[1])g.children[1].rotation.y+=.022;if(g.children[0])g.children[0].position.y=.26+Math.sin(animT*2)*.03;});
+  camTgt.y=Math.sin(animT*.25)*.06;updateCam();
+  renderer.render(scene,camera);
 }
 
+// ══════════════════════════════════════════════════
+//  BEGIN GAME
+// ══════════════════════════════════════════════════
 function beginGame(){
-  initThree();
   document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
   document.getElementById('hud').style.display='block';
-  buildTerrain();syncTiles();scene.add(debrisPts);updateCam();refreshHUD();animRunning=true;animate();
+  buildTerrain();syncTiles();scene.add(debrisPts);
+  updateCam();refreshHUD();
+  animRunning=true;animate();
 }
 
-// ── TRIVIA ────────────────────────────────────────
-let triviaPI=-1,triviaActive=false,triviaAns='';
+// ══════════════════════════════════════════════════
+//  TRIVIA
+// ══════════════════════════════════════════════════
+let triviaPI=-1,triviaActive=false,triviaCorrectLetter='';
+
 async function openTrivia(pi){
-  if(pi!==mySlot||!isMyTurn()||gs.acts>=MAX_ACT||triviaActive)return;
+  if(pi!==mySlot){addLog('Not your panel.');return;}
+  if(!isMyTurn()){addLog('Not your turn.');return;}
+  if(gs.acts>=MAX_ACT){addLog('No actions left.');return;}
+  if(triviaActive) return;
   triviaPI=pi;triviaActive=true;
-  document.getElementById('tm').classList.add('open');
+  document.getElementById('trivia-modal').classList.add('open');
   document.getElementById('tres').textContent='';
-  document.getElementById('tbody').innerHTML='<div class="tld">SCANNING THE COSMOS...</div>';
-  const topics=['solar system','stars','space exploration','black holes','astronauts','rockets','the Moon','comets'];
+  document.getElementById('tbody').innerHTML='<div class="tload">SCANNING THE COSMOS FOR A QUESTION...</div>';
+  document.getElementById('tc-close').style.display='block';
+  await fetchTrivia();
+}
+
+async function fetchTrivia(){
+  const topics=['solar system','stars and galaxies','space exploration history','planets and moons','famous astronauts','how rockets work','the Moon and its phases','black holes','comets and asteroids','the International Space Station','constellations','light years and distances in space'];
   const topic=topics[Math.floor(Math.random()*topics.length)];
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,messages:[{role:'user',content:`Space trivia about "${topic}" for a 6th grader. Reply ONLY with JSON (no markdown):\n{"question":"...","choices":["A) ...","B) ...","C) ...","D) ..."],"answer":"B"}`}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:350,
+        messages:[{role:'user',content:`Create one fun space trivia question about "${topic}" for a 6th grader (age 11-12). It should be educational and interesting!\n\nRespond ONLY with this exact JSON (no markdown, no extra text):\n{"question":"...","choices":["A) ...","B) ...","C) ...","D) ..."],"answer":"B"}\n\nThe answer field is just the letter A, B, C, or D.`}]
+      })
+    });
     const data=await resp.json();
-    const q=JSON.parse(data.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim());
-    triviaAns=q.answer;renderTrivia(q);
-  }catch(e){
+    const raw=data.content?.map(b=>b.text||'').join('')||'';
+    const clean=raw.replace(/```json|```/g,'').trim();
+    const q=JSON.parse(clean);
+    triviaCorrectLetter=q.answer;
+    renderTrivia(q);
+  } catch(e){
     const bank=[
-      {q:'Largest planet in our solar system?',a:['A) Saturn','B) Neptune','C) Jupiter','D) Uranus'],c:'C'},
-      {q:'What keeps Earth orbiting the Sun?',a:['A) Friction','B) Gravity','C) Magnetism','D) Wind'],c:'B'},
-      {q:'How long does sunlight take to reach Earth?',a:['A) 8 seconds','B) 8 days','C) 8 minutes','D) 8 hours'],c:'C'},
-      {q:'The Red Planet?',a:['A) Venus','B) Jupiter','C) Uranus','D) Mars'],c:'D'},
-      {q:'Our galaxy?',a:['A) Andromeda','B) Triangulum','C) Whirlpool','D) Milky Way'],c:'D'},
-      {q:'First human on the Moon?',a:['A) Buzz Aldrin','B) Yuri Gagarin','C) Neil Armstrong','D) John Glenn'],c:'C'},
-      {q:'Nearest star besides the Sun?',a:['A) Sirius','B) Betelgeuse','C) Vega','D) Proxima Centauri'],c:'D'},
+      {q:"Which is the largest planet in our solar system?",a:["A) Saturn","B) Neptune","C) Jupiter","D) Uranus"],c:"C"},
+      {q:"What is the name of the force that keeps Earth orbiting the Sun?",a:["A) Friction","B) Gravity","C) Magnetism","D) Wind"],c:"B"},
+      {q:"Approximately how long does light from the Sun take to reach Earth?",a:["A) 8 seconds","B) 8 days","C) 8 minutes","D) 8 hours"],c:"C"},
+      {q:"Which planet is called the Red Planet?",a:["A) Venus","B) Jupiter","C) Uranus","D) Mars"],c:"D"},
+      {q:"What do we call a scientist who studies outer space?",a:["A) Geologist","B) Biologist","C) Astronomer","D) Archaeologist"],c:"C"},
+      {q:"How many moons does Earth have?",a:["A) 0","B) 1","C) 2","D) 3"],c:"B"},
+      {q:"What is the name of the galaxy that contains our solar system?",a:["A) Andromeda","B) Triangulum","C) Whirlpool","D) Milky Way"],c:"D"},
+      {q:"Which planet has the most spectacular ring system?",a:["A) Jupiter","B) Saturn","C) Neptune","D) Mars"],c:"B"},
+      {q:"What is a shooting star actually made of?",a:["A) A burning star","B) Ice from comets","C) A meteor burning in the atmosphere","D) Space dust"],c:"C"},
+      {q:"Who was the first human to walk on the Moon?",a:["A) Buzz Aldrin","B) Yuri Gagarin","C) Neil Armstrong","D) John Glenn"],c:"C"},
+      {q:"What is the closest star to our solar system (besides the Sun)?",a:["A) Sirius","B) Betelgeuse","C) Vega","D) Proxima Centauri"],c:"D"},
+      {q:"Which planet spins on its side like a rolling ball?",a:["A) Neptune","B) Uranus","C) Saturn","D) Venus"],c:"B"},
     ];
     const item=bank[Math.floor(Math.random()*bank.length)];
-    triviaAns=item.c;renderTrivia({question:item.q,choices:item.a});
+    triviaCorrectLetter=item.c;
+    renderTrivia({question:item.q,choices:item.a,answer:item.c});
   }
 }
-function renderTrivia(q){document.getElementById('tbody').innerHTML=`<div class="tq">${q.question}</div><div class="tcs">${q.choices.map((ch,i)=>`<button class="tc" onclick="answerTrivia('${'ABCD'[i]}',this)">${ch}</button>`).join('')}</div>`}
+
+function renderTrivia(q){
+  const letters=['A','B','C','D'];
+  document.getElementById('tbody').innerHTML=`
+    <div class="tq">${q.question}</div>
+    <div class="tchoices">
+      ${q.choices.map((ch,i)=>`<button class="tc" onclick="answerTrivia('${letters[i]}',this)">${ch}</button>`).join('')}
+    </div>`;
+}
+
 function answerTrivia(letter,btn){
   document.querySelectorAll('.tc').forEach(b=>b.disabled=true);
-  const ok=letter===triviaAns;btn.classList.add(ok?'ok':'no');
-  if(!ok)document.querySelectorAll('.tc').forEach(b=>{if(b.textContent.startsWith(triviaAns))b.classList.add('ok')});
+  const correct=letter===triviaCorrectLetter;
+  btn.classList.add(correct?'ok':'no');
+  if(!correct) document.querySelectorAll('.tc').forEach(b=>{if(b.textContent.startsWith(triviaCorrectLetter)) b.classList.add('ok');});
   const res=document.getElementById('tres');
-  if(ok){res.textContent='✓ CORRECT! +6 ENERGY';res.className='tr2 win';applyAction(triviaPI,'trivia_reward');refreshHUD();push()}
-  else{res.textContent='✗ INCORRECT';res.className='tr2 lose';applyAction(triviaPI,'trivia_fail');refreshHUD();push()}
-  setTimeout(closeTrivia,1600);
+  if(correct){
+    res.textContent='✓ CORRECT! +6 ENERGY AWARDED';res.className='tres win';
+    const atype='trivia_reward';
+    if(isHost){applyAction(triviaPI,atype,{});broadcast({type:'state',gs,players});refreshHUD();}
+    else sendToHost({type:'action',slot:mySlot,action:atype,data:{}});
+    setTimeout(closeTrivia,1600);
+  } else {
+    res.textContent='✗ INCORRECT — No reward this time.';res.className='tres lose';
+    const atype='trivia_fail';
+    if(isHost){applyAction(triviaPI,atype,{});broadcast({type:'state',gs,players});refreshHUD();}
+    else sendToHost({type:'action',slot:mySlot,action:atype,data:{}});
+    setTimeout(closeTrivia,1700);
+  }
 }
-function closeTrivia(){document.getElementById('tm').classList.remove('open');triviaActive=false;document.getElementById('tbody').innerHTML='';document.getElementById('tres').textContent=''}
+function closeTrivia(){
+  document.getElementById('trivia-modal').classList.remove('open');
+  triviaActive=false;
+  document.getElementById('tbody').innerHTML='';
+  document.getElementById('tres').textContent='';
+}
+
+// Single-player quick start (solo mode)
+document.addEventListener('keydown',e=>{
+  if(e.key==='s'&&e.ctrlKey){
+    e.preventDefault();
+    // Quick solo game for testing
+    mySlot=0;isHost=true;myName='Commander';myFaction=0;
+    players=[{name:'Commander',faction:0,slot:0},{name:'Voidborn AI',faction:1,slot:1},{name:'Ignarix AI',faction:2,slot:2},{name:'Aetheron AI',faction:3,slot:3}];
+    gs=buildState();beginGame();
+  }
+});
 </script>
 </body>
 </html>
